@@ -2011,10 +2011,11 @@ header {
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--sans);background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.07) 2px,rgba(0,0,0,.07) 4px);pointer-events:none;z-index:9999}
-nav{display:flex;align-items:center;background:var(--bg1);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:200;height:48px}
+nav{display:flex;flex-direction:column;background:var(--bg1);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:200}
+.nav-top{display:flex;align-items:center;height:44px;border-bottom:1px solid var(--bd)}
 .nav-logo{font-family:var(--mono);font-size:.9rem;color:var(--cy);letter-spacing:.18em;text-shadow:0 0 10px var(--cyG);padding:0 16px;border-right:1px solid var(--bd);height:100%;display:flex;align-items:center;flex-shrink:0}
 .nav-logo span{color:var(--txD)}
-.nav-tabs{display:flex;flex:1;height:100%;overflow-x:auto}
+.nav-tabs{display:flex;height:42px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .ntab{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--txD);padding:0 14px;height:100%;display:flex;align-items:center;cursor:pointer;border-right:1px solid var(--bd);border-bottom:2px solid transparent;transition:all .15s;user-select:none;white-space:nowrap;flex-shrink:0}
 .ntab:hover{color:var(--cy);background:var(--cyD)}
 .ntab.on{color:var(--cy);border-bottom-color:var(--cy);background:var(--cyD)}
@@ -2051,7 +2052,7 @@ select.inp{cursor:pointer}
 .divider{height:1px;background:var(--bd);margin:13px 0}
 
 /* HOME */
-.home-wrap{min-height:calc(100vh - 48px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px}
+.home-wrap{min-height:calc(100vh - 86px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px}
 .home-hero{text-align:center;margin-bottom:48px}
 .home-logo{font-family:var(--mono);font-size:2.8rem;color:var(--cy);letter-spacing:.2em;text-shadow:0 0 28px var(--cyG),0 0 56px rgba(0,212,255,.14);line-height:1}
 .home-logo span{color:var(--txD)}
@@ -2269,7 +2270,17 @@ select.inp{cursor:pointer}
 </div>
 
 <nav>
-  <div class="nav-logo" onclick="goPage('home')" style="cursor:pointer">STUDY<span>//</span>OS</div>
+  <div class="nav-top">
+    <div class="nav-logo" onclick="goPage('home')" style="cursor:pointer">STUDY<span>//</span>OS</div>
+    <div class="nav-r">
+      <span class="nav-clock" id="navClock">--</span>
+      <div class="sync-id-badge">
+        <span class="dot" id="sync-dot"></span>
+        <span id="sync-id-label">—</span>
+      </div>
+      <button class="btn-logout" id="btn-logout">ログアウト</button>
+    </div>
+  </div>
   <div class="nav-tabs">
     <div class="ntab"     id="tab-home"  onclick="goPage('home')">&#9632;&nbsp;HOME</div>
     <div class="ntab"     id="tab-timer" onclick="goPage('timer')">&#9654;&nbsp;TIMER</div>
@@ -2278,14 +2289,6 @@ select.inp{cursor:pointer}
     <div class="ntab"     id="tab-exam"  onclick="goPage('exam')">&#128200;&nbsp;EXAM</div>
     <div class="ntab"     id="tab-stats" onclick="goPage('stats')">&#9641;&nbsp;STATS</div>
     <div class="ntab"     id="tab-other" onclick="goPage('other')">&#9776;&nbsp;OTHER</div>
-  </div>
-  <div class="nav-r">
-    <span class="nav-clock" id="navClock">--</span>
-    <div class="sync-id-badge">
-      <span class="dot" id="sync-dot"></span>
-      <span id="sync-id-label">—</span>
-    </div>
-    <button class="btn-logout" id="btn-logout">ログアウト</button>
   </div>
 </nav>
 
