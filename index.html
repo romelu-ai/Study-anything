@@ -242,6 +242,7 @@ header {
 .progress-fill { height: 100%; border-radius: 3px; -webkit-transition: width .4s ease; transition: width .4s ease; }
 .fill-page { background: linear-gradient(90deg, var(--cyan-dim), var(--cyan)); }
 .fill-prob { background: linear-gradient(90deg, #39cc5a, var(--green)); }
+.fill-prob2 { background: linear-gradient(90deg, #c9b800, var(--yellow)); }
 
 .card-meta {
   display: flex;
@@ -463,7 +464,7 @@ header {
 
 .big-progress {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
   margin-bottom: 14px;
 }
@@ -2468,7 +2469,8 @@ select.inp{cursor:pointer}
   <div class="header-stats-bar">
     <span>冊数 <b id="hd-count">0</b></span>
     <span>平均着手率 <b id="hd-page">0%</b></span>
-    <span>平均正答率 <b id="hd-prob">0%</b></span>
+    <span>平均正答率（1回目） <b id="hd-prob">0%</b></span>
+    <span>平均正答率（問題） <b id="hd-prob2">0%</b></span>
   </div>
   <div class="filter-bar">
     <button class="filter-btn active" data-filter="全て">全て</button>
@@ -3491,9 +3493,11 @@ function renderGrid() {
     var probs    = book.problems || [];
     var total    = probs.length;
     var attempted = probs.filter(function(p){ return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
-    var correct   = probs.filter(function(p){ return p.checks && p.checks[0] === 'ok'; }).length;
+    var correct1  = probs.filter(function(p){ return p.checks && p.checks[0] === 'ok'; }).length;
+    var correctAny = probs.filter(function(p){ return p.checks && (p.checks[0] === 'ok' || p.checks[1] === 'ok' || p.checks[2] === 'ok'); }).length;
     var attPct   = pct(attempted, total);
-    var corPct   = pct(correct, total);
+    var cor1Pct  = pct(correct1, total);
+    var corAnyPct = pct(correctAny, total);
     var card = document.createElement('div');
     card.className = 'book-card';
     card.setAttribute('data-subj', book.subject);
@@ -3503,7 +3507,10 @@ function renderGrid() {
       ? '<div class="progress-section"><div class="progress-label"><span>着手率</span><b>' + attempted + ' / ' + total + '問（' + attPct + '%）</b></div><div class="progress-track"><div class="progress-fill fill-page" style="width:' + attPct + '%"></div></div></div>' : '';
 
     var corBar = total > 0
-      ? '<div class="progress-section"><div class="progress-label"><span>正答率 ○</span><b>' + correct + ' / ' + total + '問（' + corPct + '%）</b></div><div class="progress-track"><div class="progress-fill fill-prob" style="width:' + corPct + '%"></div></div></div>' : '';
+      ? '<div class="progress-section"><div class="progress-label"><span>正答率（1回目）</span><b>' + correct1 + ' / ' + total + '問（' + cor1Pct + '%）</b></div><div class="progress-track"><div class="progress-fill fill-prob" style="width:' + cor1Pct + '%"></div></div></div>' : '';
+
+    var corAnyBar = total > 0
+      ? '<div class="progress-section"><div class="progress-label"><span>正答率（問題）</span><b>' + correctAny + ' / ' + total + '問（' + corAnyPct + '%）</b></div><div class="progress-track"><div class="progress-fill fill-prob2" style="width:' + corAnyPct + '%"></div></div></div>' : '';
 
     var logCount = (book.logs||[]).length;
 
@@ -3535,7 +3542,7 @@ function renderGrid() {
         '</div>' +
         coverHtml +
       '</div>' +
-      attBar + corBar +
+      attBar + corBar + corAnyBar +
       '<div class="card-meta">' +
         (total === 0 ? '<span style="color:var(--text-dim)">問題データなし</span>' : '') +
         '<span>ログ <b style="color:var(--orange)">' + logCount + '件</b></span>' +
@@ -3588,11 +3595,18 @@ function updateHeader() {
     var c = b.problems.filter(function(p){ return p.checks && p.checks[0] === 'ok'; }).length;
     return pct(c, t);
   });
+  var corAnyPcts = booksWithProbs.map(function(b){
+    var t = b.problems.length;
+    var c = b.problems.filter(function(p){ return p.checks && (p.checks[0] === 'ok' || p.checks[1] === 'ok' || p.checks[2] === 'ok'); }).length;
+    return pct(c, t);
+  });
   var avgAtt = attPcts.length ? Math.round(attPcts.reduce(function(a,b){return a+b;},0)/attPcts.length) : 0;
   var avgCor = corPcts.length ? Math.round(corPcts.reduce(function(a,b){return a+b;},0)/corPcts.length) : 0;
+  var avgCorAny = corAnyPcts.length ? Math.round(corAnyPcts.reduce(function(a,b){return a+b;},0)/corAnyPcts.length) : 0;
   document.getElementById('hd-count').textContent = count;
   document.getElementById('hd-page').textContent  = avgAtt + '%';
   document.getElementById('hd-prob').textContent  = avgCor + '%';
+  document.getElementById('hd-prob2').textContent = avgCorAny + '%';
 }
 
 function esc(s) {
@@ -4204,9 +4218,11 @@ function renderDetail(book, keepEditMode) {
   var probs = book.problems || [];
   var total    = probs.length;
   var attempted = probs.filter(function(p){ return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
-  var correct   = probs.filter(function(p){ return p.checks && p.checks[0] === 'ok'; }).length;
+  var correct1   = probs.filter(function(p){ return p.checks && p.checks[0] === 'ok'; }).length;
+  var correctAny = probs.filter(function(p){ return p.checks && (p.checks[0] === 'ok' || p.checks[1] === 'ok' || p.checks[2] === 'ok'); }).length;
   var attPct = pct(attempted, total);
-  var corPct = pct(correct, total);
+  var cor1Pct = pct(correct1, total);
+  var corAnyPct = pct(correctAny, total);
 
   var attBox = total > 0 ? (
     '<div class="big-prog-box">' +
@@ -4219,12 +4235,21 @@ function renderDetail(book, keepEditMode) {
 
   var corBox = total > 0 ? (
     '<div class="big-prog-box">' +
-      '<div class="big-prog-label">正答率（○のみ）</div>' +
-      '<div class="big-prog-nums">' + correct + '<span> / ' + total + '問</span></div>' +
-      '<div class="big-prog-pct" style="color:var(--green)">' + corPct + '%</div>' +
-      '<div class="progress-track"><div class="progress-fill fill-prob" style="width:' + corPct + '%"></div></div>' +
+      '<div class="big-prog-label">正答率（1回目○のみ）</div>' +
+      '<div class="big-prog-nums">' + correct1 + '<span> / ' + total + '問</span></div>' +
+      '<div class="big-prog-pct" style="color:var(--green)">' + cor1Pct + '%</div>' +
+      '<div class="progress-track"><div class="progress-fill fill-prob" style="width:' + cor1Pct + '%"></div></div>' +
     '</div>'
-  ) : '<div class="big-prog-box" style="opacity:.4"><div class="big-prog-label">正答率</div><div style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">問題データなし</div></div>';
+  ) : '<div class="big-prog-box" style="opacity:.4"><div class="big-prog-label">正答率（1回目）</div><div style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">問題データなし</div></div>';
+
+  var corAnyBox = total > 0 ? (
+    '<div class="big-prog-box">' +
+      '<div class="big-prog-label">正答率（問題・いずれかで○）</div>' +
+      '<div class="big-prog-nums">' + correctAny + '<span> / ' + total + '問</span></div>' +
+      '<div class="big-prog-pct" style="color:var(--yellow)">' + corAnyPct + '%</div>' +
+      '<div class="progress-track"><div class="progress-fill fill-prob2" style="width:' + corAnyPct + '%"></div></div>' +
+    '</div>'
+  ) : '<div class="big-prog-box" style="opacity:.4"><div class="big-prog-label">正答率（問題）</div><div style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">問題データなし</div></div>';
 
   var hasBulkReset = !!findBulkKey(book.title);
 
@@ -4297,7 +4322,7 @@ function renderDetail(book, keepEditMode) {
   body.innerHTML =
     '<div class="detail-section">' +
       '<div class="detail-section-title">PROGRESS</div>' +
-      '<div class="big-progress">' + attBox + corBox + '</div>' +
+      '<div class="big-progress">' + attBox + corBox + corAnyBox + '</div>' +
     '</div>' +
     checkSectionHtml +
     '<div class="detail-section">' +
@@ -5649,8 +5674,8 @@ function renderWeekChart(){
     if(d.m>0&&bh>16){
       ctx.fillStyle=d.today?'rgba(0,212,255,.9)':'rgba(74,96,112,.9)';
       ctx.font='8px Share Tech Mono,monospace';
-      var lbl2=Math.floor(d.m/60)+'h';
-      if(d.m%60)lbl2=(d.m>=60)?Math.floor(d.m/60)+'h':d.m+'m';
+      var h3=Math.floor(d.m/60),m3=d.m%60;
+      var lbl2=(h3>0?h3+'h':'')+(m3>0?m3+'m':'');
       ctx.fillText(lbl2,bx+barW/2,by-3);
     }
     // x軸ラベル
