@@ -2097,6 +2097,21 @@ select.inp{cursor:pointer}
 /* TIMER */
 .timer-layout{display:grid;grid-template-columns:280px 1fr;gap:14px}
 .ring-wrap{display:flex;justify-content:center;align-items:center;margin:5px 0 11px;position:relative}
+.tfs-btn{position:absolute;top:-2px;right:-2px;width:26px;height:26px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--cy);display:flex;align-items:center;justify-content:center;font-size:.75rem;cursor:pointer;z-index:2}
+.tfs-btn:hover{background:var(--bg2)}
+.timer-stage.tfs{position:fixed;inset:0;z-index:9500;background:var(--bg1);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:0}
+.timer-stage.tfs .ring-wrap{margin:0 0 22px}
+.timer-stage.tfs .ring-svg{width:min(78vw,60vh);height:min(78vw,60vh)}
+.timer-stage.tfs .rdig{font-size:clamp(2.6rem,11vw,6rem)}
+.timer-stage.tfs .rphase{font-size:clamp(.8rem,2.6vw,1.1rem);margin-top:8px}
+.timer-stage.tfs .pdots{margin:14px 0}
+.timer-stage.tfs #swLapWrap{max-width:320px;width:90%}
+.timer-stage.tfs .brow{margin-top:6px}
+.timer-stage.tfs .sbtn{font-size:.85rem;padding:12px 20px}
+.timer-stage.tfs .run-ind{margin-top:14px;font-size:.7rem}
+.timer-stage.tfs .tfs-btn{top:6px;right:6px;position:fixed;width:34px;height:34px;font-size:.9rem}
+.timer-stage.tfs .tfs-close{display:flex}
+.tfs-close{display:none;position:fixed;top:6px;left:6px;width:34px;height:34px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--txD);align-items:center;justify-content:center;font-size:.9rem;cursor:pointer;z-index:9501}
 .ring-svg{transform:rotate(-90deg)}
 .ring-bg{fill:none;stroke:var(--bg3);stroke-width:4}
 .ring-prog{fill:none;stroke:var(--cy);stroke-width:4;stroke-linecap:round;stroke-dasharray:471;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 6px var(--cy))}
@@ -2403,31 +2418,35 @@ select.inp{cursor:pointer}
           <button class="tpreset" onclick="applyPreset(90)">90分</button>
         </div>
       </div>
-      <div class="ring-wrap">
-        <svg class="ring-svg" width="150" height="150" viewBox="0 0 150 150">
-          <circle class="ring-bg"   cx="75" cy="75" r="70"/>
-          <circle class="ring-prog" id="ringProg" cx="75" cy="75" r="70"/>
-        </svg>
-        <div class="ring-in">
-          <div class="rdig" id="tDig">25:00</div>
-          <div class="rphase" id="tPhase">FOCUS</div>
+      <div id="timerStage" class="timer-stage">
+        <div class="tfs-close" id="tfsClose" onclick="toggleTimerFullscreen()">&#10005;</div>
+        <div class="ring-wrap">
+          <button class="tfs-btn" id="tfsBtn" onclick="toggleTimerFullscreen()" title="全画面表示">&#9974;</button>
+          <svg class="ring-svg" width="150" height="150" viewBox="0 0 150 150">
+            <circle class="ring-bg"   cx="75" cy="75" r="70"/>
+            <circle class="ring-prog" id="ringProg" cx="75" cy="75" r="70"/>
+          </svg>
+          <div class="ring-in">
+            <div class="rdig" id="tDig">25:00</div>
+            <div class="rphase" id="tPhase">FOCUS</div>
+          </div>
         </div>
+        <div id="swLapWrap" style="display:none;margin-bottom:8px">
+          <ul id="lapList" style="list-style:none;max-height:90px;overflow-y:auto"></ul>
+        </div>
+        <div class="pdots" id="pdots"></div>
+        <div id="cdBtns" class="brow" style="margin-bottom:7px">
+          <button class="sbtn bc" id="startBtn" onclick="toggleTimer()">&#9654; START</button>
+          <button class="sbtn bd2" onclick="resetTimer()">RESET</button>
+          <button class="sbtn bo" id="pomoBtn" onclick="togglePomo()">&#127813; POMO</button>
+        </div>
+        <div id="swBtns" class="brow" style="display:none;margin-bottom:7px">
+          <button class="sbtn bc" id="swStartBtn" onclick="toggleSW()">&#9654; START</button>
+          <button class="sbtn bd2" onclick="lapSW()" id="swLapBtn" disabled>LAP</button>
+          <button class="sbtn bd2" onclick="resetSW()">RESET</button>
+        </div>
+        <div class="run-ind" id="runInd"><div class="rdot"></div><span id="runLbl">RECORDING</span></div>
       </div>
-      <div id="swLapWrap" style="display:none;margin-bottom:8px">
-        <ul id="lapList" style="list-style:none;max-height:90px;overflow-y:auto"></ul>
-      </div>
-      <div class="pdots" id="pdots"></div>
-      <div id="cdBtns" class="brow" style="margin-bottom:7px">
-        <button class="sbtn bc" id="startBtn" onclick="toggleTimer()">&#9654; START</button>
-        <button class="sbtn bd2" onclick="resetTimer()">RESET</button>
-        <button class="sbtn bo" id="pomoBtn" onclick="togglePomo()">&#127813; POMO</button>
-      </div>
-      <div id="swBtns" class="brow" style="display:none;margin-bottom:7px">
-        <button class="sbtn bc" id="swStartBtn" onclick="toggleSW()">&#9654; START</button>
-        <button class="sbtn bd2" onclick="lapSW()" id="swLapBtn" disabled>LAP</button>
-        <button class="sbtn bd2" onclick="resetSW()">RESET</button>
-      </div>
-      <div class="run-ind" id="runInd"><div class="rdot"></div><span id="runLbl">RECORDING</span></div>
       <div class="divider"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
         <span class="flbl" style="margin:0">DAILY GOAL</span>
@@ -3407,8 +3426,15 @@ function doLogin(userId) {
 
       // ── 画面復帰時（タブ切り替え・スリープ復帰）に差分同期 ──
       document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'visible' && currentUserId) {
-          syncFromCloud(true);
+        if (document.visibilityState === 'visible') {
+          if (currentUserId) syncFromCloud(true);
+          // バックグラウンドで間引かれた分を実時刻から再計算して表示に反映
+          if (S.running) tickTimer();
+          if (swState.running) tickSW();
+          // Wake Lock はページが非表示になると自動解除されるため、動作中なら再取得
+          if (S.running || swState.running) requestWakeLock();
+        } else {
+          releaseWakeLock();
         }
       });
 
@@ -4841,10 +4867,71 @@ function tick(){
   document.getElementById('navClock').textContent=d.getFullYear()+'.'+p2(d.getMonth()+1)+'.'+p2(d.getDate())+' '+ds[d.getDay()]+' '+p2(d.getHours())+':'+p2(d.getMinutes());
 }
 
+// ── タイマー全画面表示 ──
+function isNativeFsSupported(){
+  var el=document.documentElement;
+  return !!(el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen);
+}
+function isInFullscreen(){
+  return !!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement);
+}
+function toggleTimerFullscreen(){
+  var stage=document.getElementById('timerStage');
+  var active=stage.classList.contains('tfs');
+  if(!active){
+    stage.classList.add('tfs');
+    document.getElementById('tfsBtn').innerHTML='&#10005;';
+    if(isNativeFsSupported()){
+      var req=stage.requestFullscreen||stage.webkitRequestFullscreen||stage.mozRequestFullScreen||stage.msRequestFullscreen;
+      if(req)req.call(stage).catch(function(){});
+    }
+  }else{
+    exitTimerFullscreen();
+  }
+}
+function exitTimerFullscreen(){
+  var stage=document.getElementById('timerStage');
+  stage.classList.remove('tfs');
+  document.getElementById('tfsBtn').innerHTML='&#9974;';
+  if(isInFullscreen()){
+    var exit=document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen;
+    if(exit)exit.call(document).catch(function(){});
+  }
+}
+['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange'].forEach(function(ev){
+  document.addEventListener(ev,function(){
+    if(!isInFullscreen()){
+      var stage=document.getElementById('timerStage');
+      if(stage&&stage.classList.contains('tfs')){
+        stage.classList.remove('tfs');
+        document.getElementById('tfsBtn').innerHTML='&#9974;';
+      }
+    }
+  });
+});
+document.addEventListener('keydown',function(ev){
+  if(ev.key==='Escape'){
+    var stage=document.getElementById('timerStage');
+    if(stage&&stage.classList.contains('tfs')&&!isInFullscreen())exitTimerFullscreen();
+  }
+});
+
 /* ── TIMER ── */
 var CIRC=2*Math.PI*70;
 function setRing(r){document.getElementById('ringProg').style.strokeDashoffset=CIRC*(1-r)}
 
+// ── Wake Lock（タイマー動作中は画面ロックを防止） ──
+var wakeLock = null;
+function requestWakeLock() {
+  if (!('wakeLock' in navigator)) return;
+  navigator.wakeLock.request('screen').then(function(wl) {
+    wakeLock = wl;
+    wakeLock.addEventListener('release', function() { wakeLock = null; });
+  }).catch(function() { /* 非対応・拒否時は静かに無視 */ });
+}
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release().catch(function(){}); wakeLock = null; }
+}
 function setTimerMode(mode,el){
   if(S.timerMode==='countdown'&&S.running)stopTimer();
   if(S.timerMode==='stopwatch'&&S.swRunning)stopSW();
@@ -4885,12 +4972,23 @@ function applyPreset(mins){
 function toggleTimer(){if(S.running)stopTimer();else startTimer()}
 function startTimer(){
   S.running=true;S.sessionStart=new Date();S.curBookId=document.getElementById('timerBook').value||null;S.ringTotal=S.sec;
+  S.endTime=Date.now()+S.sec*1000;
   document.getElementById('startBtn').innerHTML='&#9646;&#9646; PAUSE';document.getElementById('runInd').classList.add('on');
   document.getElementById('runLbl').textContent='REC: '+(S.curBookId?bookName(S.curBookId):'(未選択)');
-  S.iv=setInterval(function(){S.sec--;document.getElementById('tDig').textContent=fs(S.sec);setRing(S.sec/S.ringTotal);if(S.sec<=0)onTimerEnd();},1000);
+  requestWakeLock();
+  S.iv=setInterval(tickTimer,1000);
+}
+function tickTimer(){
+  var remain=Math.round((S.endTime-Date.now())/1000);
+  if(remain<0)remain=0;
+  S.sec=remain;
+  document.getElementById('tDig').textContent=fs(S.sec);
+  setRing(S.sec/S.ringTotal);
+  if(S.sec<=0)onTimerEnd();
 }
 function stopTimer(){
   S.running=false;clearInterval(S.iv);document.getElementById('startBtn').innerHTML='&#9654; START';document.getElementById('runInd').classList.remove('on');commitSession();
+  releaseWakeLock();
 }
 function resetTimer(){
   stopTimer();
@@ -4901,6 +4999,7 @@ function resetTimer(){
 }
 function onTimerEnd(){
   clearInterval(S.iv);S.running=false;document.getElementById('startBtn').innerHTML='&#9654; START';document.getElementById('runInd').classList.remove('on');commitSession();
+  releaseWakeLock();
   if(S.pomo){
     if(S.pomoPhase==='work'){S.pomoN++;S.pomoPhase='break';S.sec=S.BREAK;S.ringTotal=S.BREAK;document.getElementById('tPhase').textContent='BREAK';document.getElementById('ringProg').classList.add('brk');alert('セッション完了！休憩しましょう ☕');}
     else{S.pomoPhase='work';S.sec=S.WORK;S.ringTotal=S.WORK;document.getElementById('tPhase').textContent='FOCUS';document.getElementById('ringProg').classList.remove('brk');alert('休憩終了！');}
@@ -4916,7 +5015,7 @@ function togglePomo(){
   S.pomo=!S.pomo;document.getElementById('pomoBtn').style.background=S.pomo?'var(--orD)':'transparent';
   if(S.pomo){S.sec=S.WORK;S.pomoPhase='work';S.pomoN=0;document.getElementById('tPhase').textContent='FOCUS';document.getElementById('ringProg').classList.remove('brk');}
   else{S.sec=1500;document.getElementById('tPhase').textContent='TIMER';}
-  if(S.running){clearInterval(S.iv);S.running=false;S.sessionStart=null;document.getElementById('startBtn').innerHTML='&#9654; START';document.getElementById('runInd').classList.remove('on');}
+  if(S.running){clearInterval(S.iv);S.running=false;S.sessionStart=null;document.getElementById('startBtn').innerHTML='&#9654; START';document.getElementById('runInd').classList.remove('on');releaseWakeLock();}
   document.getElementById('tDig').textContent=fs(S.sec);setRing(1);renderPomoDots();
 }
 function renderPomoDots(){
@@ -4930,10 +5029,16 @@ function startSW(){
   swState.running=true;swState.startTime=Date.now()-swState.elapsed;S.sessionStart=new Date();S.curBookId=document.getElementById('timerBook').value||null;
   document.getElementById('swStartBtn').innerHTML='&#9646;&#9646; PAUSE';document.getElementById('swLapBtn').disabled=false;document.getElementById('runInd').classList.add('on');
   document.getElementById('runLbl').textContent='SW REC: '+(S.curBookId?bookName(S.curBookId):'(未選択)');
-  swState.iv=setInterval(function(){swState.elapsed=Date.now()-swState.startTime;document.getElementById('tDig').textContent=fsSW(swState.elapsed);setRing((swState.elapsed%(60*60*1000))/(60*60*1000));},100);
+  requestWakeLock();
+  swState.iv=setInterval(tickSW,100);
 }
-function pauseSW(){swState.running=false;clearInterval(swState.iv);document.getElementById('swStartBtn').innerHTML='&#9654; START';commitSwSession();}
-function stopSW(){swState.running=false;clearInterval(swState.iv);commitSwSession();document.getElementById('swStartBtn').innerHTML='&#9654; START';document.getElementById('runInd').classList.remove('on');}
+function tickSW(){
+  swState.elapsed=Date.now()-swState.startTime;
+  document.getElementById('tDig').textContent=fsSW(swState.elapsed);
+  setRing((swState.elapsed%(60*60*1000))/(60*60*1000));
+}
+function pauseSW(){swState.running=false;clearInterval(swState.iv);document.getElementById('swStartBtn').innerHTML='&#9654; START';commitSwSession();releaseWakeLock();}
+function stopSW(){swState.running=false;clearInterval(swState.iv);commitSwSession();document.getElementById('swStartBtn').innerHTML='&#9654; START';document.getElementById('runInd').classList.remove('on');releaseWakeLock();}
 function resetSW(){stopSW();swState.elapsed=0;swState.lapStart=0;swState.laps=[];document.getElementById('tDig').textContent='00:00.0';document.getElementById('lapList').innerHTML='';document.getElementById('swLapBtn').disabled=true;setRing(0);}
 function lapSW(){if(!swState.running)return;var lapTime=swState.elapsed-swState.lapStart;swState.lapStart=swState.elapsed;var n=swState.laps.length+1;swState.laps.push({n:n,lap:lapTime,total:swState.elapsed});var li=document.createElement('li');li.className='lap-item';li.innerHTML='<span class="lap-n">LAP '+p2(n)+'</span><span class="lap-t">'+fsSW(lapTime)+'</span><span class="lap-d">'+fsSW(swState.elapsed)+'</span>';var list=document.getElementById('lapList');list.insertBefore(li,list.firstChild);}
 function commitSwSession(){if(!S.sessionStart)return;var el=Math.floor((new Date()-S.sessionStart)/1000);S.sessionStart=null;if(el<30)return;var mins=Math.round(el/60);if(mins<1)return;addSession(S.curBookId,mins,0,0,'SW');}
