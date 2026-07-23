@@ -4916,6 +4916,41 @@ document.addEventListener('keydown',function(ev){
   }
 });
 
+// ── タイマー終了音（Web Audio APIでビープ音を生成。外部音源ファイル不要） ──
+var alertAudioCtx=null;
+function ensureAudioCtx(){
+  try{
+    if(!alertAudioCtx){
+      var AC=window.AudioContext||window.webkitAudioContext;
+      if(AC)alertAudioCtx=new AC();
+    }
+    if(alertAudioCtx&&alertAudioCtx.state==='suspended')alertAudioCtx.resume();
+  }catch(e){}
+}
+function playAlertSound(){
+  try{
+    ensureAudioCtx();
+    if(alertAudioCtx&&alertAudioCtx.state==='suspended')alertAudioCtx.resume();
+    if(!alertAudioCtx)throw new Error('no audio ctx');
+    var ctx=alertAudioCtx;
+    var now=ctx.currentTime;
+    [0,0.32,0.64].forEach(function(t){
+      var osc=ctx.createOscillator();
+      var gain=ctx.createGain();
+      osc.type='sine';
+      osc.frequency.value=880;
+      gain.gain.setValueAtTime(0.0001,now+t);
+      gain.gain.exponentialRampToValueAtTime(0.4,now+t+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001,now+t+0.26);
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.start(now+t);
+      osc.stop(now+t+0.3);
+    });
+  }catch(e){}
+  if(navigator.vibrate){try{navigator.vibrate([200,100,200,100,200]);}catch(e){}}
+}
+document.addEventListener('click',ensureAudioCtx,{once:true});
+
 /* ── TIMER ── */
 var CIRC=2*Math.PI*70;
 function setRing(r){document.getElementById('ringProg').style.strokeDashoffset=CIRC*(1-r)}
@@ -4975,6 +5010,7 @@ function startTimer(){
   S.endTime=Date.now()+S.sec*1000;
   document.getElementById('startBtn').innerHTML='&#9646;&#9646; PAUSE';document.getElementById('runInd').classList.add('on');
   document.getElementById('runLbl').textContent='REC: '+(S.curBookId?bookName(S.curBookId):'(未選択)');
+  ensureAudioCtx();
   requestWakeLock();
   S.iv=setInterval(tickTimer,1000);
 }
@@ -5000,6 +5036,7 @@ function resetTimer(){
 function onTimerEnd(){
   clearInterval(S.iv);S.running=false;document.getElementById('startBtn').innerHTML='&#9654; START';document.getElementById('runInd').classList.remove('on');commitSession();
   releaseWakeLock();
+  playAlertSound();
   if(S.pomo){
     if(S.pomoPhase==='work'){S.pomoN++;S.pomoPhase='break';S.sec=S.BREAK;S.ringTotal=S.BREAK;document.getElementById('tPhase').textContent='BREAK';document.getElementById('ringProg').classList.add('brk');alert('セッション完了！休憩しましょう ☕');}
     else{S.pomoPhase='work';S.sec=S.WORK;S.ringTotal=S.WORK;document.getElementById('tPhase').textContent='FOCUS';document.getElementById('ringProg').classList.remove('brk');alert('休憩終了！');}
