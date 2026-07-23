@@ -2112,6 +2112,8 @@ select.inp{cursor:pointer}
 .timer-stage.tfs .tfs-btn{top:6px;right:6px;position:fixed;width:34px;height:34px;font-size:.9rem}
 .timer-stage.tfs .tfs-close{display:flex}
 .tfs-close{display:none;position:fixed;top:6px;left:6px;width:34px;height:34px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--txD);align-items:center;justify-content:center;font-size:.9rem;cursor:pointer;z-index:9501}
+.app-toast{position:fixed;left:50%;bottom:calc(24px + var(--safe-bottom));transform:translateX(-50%) translateY(16px);background:var(--bg2);border:1px solid var(--bdB);border-radius:10px;padding:14px 22px;font-family:var(--sans);font-size:.85rem;color:var(--txB);box-shadow:0 8px 30px rgba(0,0,0,.5);z-index:9600;opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;text-align:center;max-width:86vw}
+.app-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .ring-svg{transform:rotate(-90deg)}
 .ring-bg{fill:none;stroke:var(--bg3);stroke-width:4}
 .ring-prog{fill:none;stroke:var(--cy);stroke-width:4;stroke-linecap:round;stroke-dasharray:471;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 6px var(--cy))}
@@ -4951,6 +4953,25 @@ function playAlertSound(){
 }
 document.addEventListener('click',ensureAudioCtx,{once:true});
 
+// ── 非ブロッキング通知（alert()はタイマー終了音の再生を妨げることがあるため使用しない）──
+var toastHideTimer=null;
+function showToast(msg,duration){
+  duration=duration||3200;
+  var el=document.getElementById('appToast');
+  if(!el){
+    el=document.createElement('div');
+    el.id='appToast';el.className='app-toast';
+    document.body.appendChild(el);
+  }
+  el.textContent=msg;
+  // reflow を挟んでからshowを付与し、確実にトランジションさせる
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+  clearTimeout(toastHideTimer);
+  toastHideTimer=setTimeout(function(){el.classList.remove('show');},duration);
+}
+
 /* ── TIMER ── */
 var CIRC=2*Math.PI*70;
 function setRing(r){document.getElementById('ringProg').style.strokeDashoffset=CIRC*(1-r)}
@@ -5038,10 +5059,10 @@ function onTimerEnd(){
   releaseWakeLock();
   playAlertSound();
   if(S.pomo){
-    if(S.pomoPhase==='work'){S.pomoN++;S.pomoPhase='break';S.sec=S.BREAK;S.ringTotal=S.BREAK;document.getElementById('tPhase').textContent='BREAK';document.getElementById('ringProg').classList.add('brk');alert('セッション完了！休憩しましょう ☕');}
-    else{S.pomoPhase='work';S.sec=S.WORK;S.ringTotal=S.WORK;document.getElementById('tPhase').textContent='FOCUS';document.getElementById('ringProg').classList.remove('brk');alert('休憩終了！');}
+    if(S.pomoPhase==='work'){S.pomoN++;S.pomoPhase='break';S.sec=S.BREAK;S.ringTotal=S.BREAK;document.getElementById('tPhase').textContent='BREAK';document.getElementById('ringProg').classList.add('brk');showToast('セッション完了！休憩しましょう ☕');}
+    else{S.pomoPhase='work';S.sec=S.WORK;S.ringTotal=S.WORK;document.getElementById('tPhase').textContent='FOCUS';document.getElementById('ringProg').classList.remove('brk');showToast('休憩終了！');}
     renderPomoDots();
-  }else{S.sec=S.ringTotal;alert('タイマー終了！お疲れ様 ✨');}
+  }else{S.sec=S.ringTotal;showToast('タイマー終了！お疲れ様 ✨');}
   document.getElementById('tDig').textContent=fs(S.sec);setRing(1);
 }
 function commitSession(){
