@@ -2115,8 +2115,8 @@ select.inp{cursor:pointer}
 .app-toast{position:fixed;left:50%;bottom:calc(24px + var(--safe-bottom));transform:translateX(-50%) translateY(16px);background:var(--bg2);border:1px solid var(--bdB);border-radius:10px;padding:14px 22px;font-family:var(--sans);font-size:.85rem;color:var(--txB);box-shadow:0 8px 30px rgba(0,0,0,.5);z-index:9600;opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;text-align:center;max-width:86vw}
 .app-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .ring-svg{transform:rotate(-90deg)}
-.ring-bg{fill:none;stroke:var(--bg3);stroke-width:4}
-.ring-prog{fill:none;stroke:var(--cy);stroke-width:4;stroke-linecap:round;stroke-dasharray:471;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 6px var(--cy))}
+.ring-bg{fill:none;stroke:var(--bg3);stroke-width:11}
+.ring-prog{fill:none;stroke:var(--cy);stroke-width:11;stroke-linecap:round;stroke-dasharray:414.69;stroke-dashoffset:414.69;transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 6px var(--cy))}
 .ring-prog.brk{stroke:var(--gn);filter:drop-shadow(0 0 6px var(--gn))}
 .ring-in{position:absolute;text-align:center}
 .rdig{font-family:var(--mono);font-size:2.2rem;color:var(--txB);text-shadow:0 0 14px var(--cyG)}
@@ -2425,8 +2425,8 @@ select.inp{cursor:pointer}
         <div class="ring-wrap">
           <button class="tfs-btn" id="tfsBtn" onclick="toggleTimerFullscreen()" title="全画面表示">&#9974;</button>
           <svg class="ring-svg" width="150" height="150" viewBox="0 0 150 150">
-            <circle class="ring-bg"   cx="75" cy="75" r="70"/>
-            <circle class="ring-prog" id="ringProg" cx="75" cy="75" r="70"/>
+            <circle class="ring-bg"   cx="75" cy="75" r="66"/>
+            <circle class="ring-prog" id="ringProg" cx="75" cy="75" r="66"/>
           </svg>
           <div class="ring-in">
             <div class="rdig" id="tDig">25:00</div>
@@ -4918,7 +4918,20 @@ document.addEventListener('keydown',function(ev){
   }
 });
 
-// ── タイマー終了音（Web Audio APIでビープ音を生成。外部音源ファイル不要） ──
+// ── タイマー終了音 ──
+// 2系統で再生する: (1) Web Audio APIで生成したビープ音 (2) <audio>要素での埋め込みWAV再生
+// 外部HDMIディスプレイ接続時などにWeb Audioの出力先が正しく追従しないことがあるため、
+// OS標準の音声出力ルーティングに乗る<audio>要素も併用して確実性を上げている。
+var ALERT_WAV_B64='UklGRoQnAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YWAnAAAAAOoA1ALJAx4Cx/21+AD2Hvgw/3YIVw+iD/gH/fqH7gLpKO7B/KgOYxsdHEIPzPlg5QHcKOO3+GwT0yYVKesXOvpd3STPO9cc868WgjFkNtohS/ya1pLCgsr662IYTjvkQ/ksAAAx0XO2IL1h43kYFURuUSs5VQU4ze2qOa9g2esWuEvZXlRGRQzEyiOg8qAOzrITGlL/a1JUxhTlyTyWcpJHwnAO+VP4cjJdpRz0zsWXbZBLvDsH205JckNhmSOY1Q6b2Y6TtgAAbUkncfJkaCpn3L2et40lscX4tUOTbztoDDFb486iCI0HrJDxuT2ObRtrfzdr6j6nzow+p2vqfzcba45tuT2Q8QesCI3OolvjDDE7aJNvtUPF+CWxt429nmfcaCryZCdxbUkAAJO22Y4Om5jVmSNDYUly2047B0u8bZDFl/TOpRwyXfhy+VNwDkfCcpLllIHIlRXCWDJzwliVFYHI5ZRykkfCcA75U/hyMl2lHPTOxZdtkEu8OwfbTklyQ2GZI5jVDpvZjpO2AABtSSdx8mRoKmfcvZ63jSWxxfi1Q5NvO2gMMVvjzqIIjQeskPG5PY5tG2t/N2vqPqfOjD6na+p/Nxtrjm25PZDxB6wIjc6iW+MMMTtok2+1Q8X4JbG3jb2eZ9xoKvJkJ3FtSQAAk7bZjg6bmNWZI0NhSXLbTjsHS7xtkMWX9M6lHDJd+HL5U3AOR8JykuWUgciVFcJYMnPCWJUVgcjllHKSR8JwDvlT+HIyXaUc9M7Fl22QS7w7B9tOSXJDYZkjmNUOm9mOk7YAAG1JJ3HyZGgqZ9y9nreNJbHF+LVDk287aAwxW+POogiNB6yQ8bk9jm0ba383a+o+p86MPqdr6n83G2uObbk9kPEHrAiNzqJb4wwxO2iTb7VDxfglsbeNvZ5n3Ggq8mQncW1JAACTttmODpuY1ZkjQ2FJcttOOwdLvG2QxZf0zqUcMl34cvlTcA5HwnKS5ZSByJUVwlgyc8JYlRWByOWUcpJHwnAO+VP4cjJdpRz0zsWXbZBLvDsH205JckNhmSOY1Q6b2Y6TtgAAbUkncfJkaCpn3L2et40lscX4tUOTbztoDDFb486iCI0HrJDxuT2ObRtrfzdr6j6nzow+p2vqfzcba45tuT2Q8QesCI3OolvjDDE7aJNvtUPF+CWxt429nmfcaCryZCdxbUkAAJO22Y4Om5jVmSNDYUly2047B0u8bZDFl/TOpRwyXfhy+VNwDkfCcpLllIHIlRXCWDJzwliVFYHI5ZRykkfCcA75U/hyMl2lHPTOxZdtkEu8OwfbTklyQ2GZI5jVDpvZjpO2AABtSSdx8mRoKmfcvZ63jSWxxfi1Q5NvO2gMMVvjzqIIjQeskPG5PY5tG2t/N2vqPqfOjD6na+p/Nxtrjm25PZDxB6wIjc6iW+MMMTtok2+1Q8X4JbG3jb2eZ9xoKvJkJ3FtSQAAk7bZjg6bmNWZI0NhSXLbTjsHS7xtkMWX9M6lHDJd+HL5U3AOR8JykuWUgciVFcJYMnPCWJUVgcjllHKSR8JwDvlT+HIyXaUc9M7Fl22QS7w7B9tOSXJDYZkjmNUOm9mOk7YAAG1JJ3HyZGgqZ9y9nreNJbHF+LVDk287aAwxW+POogiNB6yQ8bk9jm0ba383a+o+p86MPqdr6n83G2uObbk9kPEHrAiNzqJb4wwxO2iTb7VDxfglsbeNvZ5n3Ggq8mQncW1JAACTttmODpuY1ZkjQ2FJcttOOwdLvG2QxZf0zqUcMl34cvlTcA5HwnKS5ZSByJUVwlgyc8JYlRWByOWUcpJHwnAO+VP4cjJdpRz0zsWXbZBLvDsH205JckNhmSOY1Q6b2Y6TtgAAbUkncfJkaCpn3L2et40lscX4tUOTbztoDDFb486iCI0HrJDxuT2ObRtrfzdr6j6nzow+p2vqfzcba45tuT2Q8QesCI3OolvjDDE7aJNvtUPF+CWxt429nmfcaCryZCdxbUkAAJO22Y4Om5jVmSNDYUly2047B0u8bZDFl/TOpRwyXfhy+VNwDkfCcpLllIHIlRXCWDJzwliVFYHI5ZRykkfCcA75U/hyMl2lHPTOxZdtkEu8OwfbTklyQ2GZI5jVDpvZjpO2AABtSSdx8mRoKmfcvZ63jSWxxfi1Q5NvO2gMMVvjzqIIjQeskPG5PY5tG2t/N2vqPqfOjD6na+p/Nxtrjm25PZDxB6wIjc6iW+MMMTtok2+1Q8X4JbG3jb2eZ9xoKvJkJ3FtSQAAk7bZjg6bmNWZI0NhSXLbTjsHS7xtkMWX9M6lHDJd+HL5U3AOR8JykuWUgciVFcJYMnPCWJUVgcjllHKSR8JwDvlT+HIyXaUc9M7Fl22QS7w7B9tOSXJDYZkjmNUOm9mOk7YAAG1JJ3HyZGgqZ9y9nreNJbHF+LVDk287aAwxW+POogiNB6yQ8bk9jm0ba383a+o+p86MPqdr6n83G2uObbk9kPEHrAiNzqJb4wwxO2iTb7VDxfglsbeNvZ5n3Ggq8mQncW1JAACTttmODpuY1ZkjQ2FJcttOOwdLvG2QxZf0zqUcMl34cvlTcA5HwnKS5ZSByJUVwlgyc8JYlRWByOWUcpJHwnAO+VP4cjJdpRz0zsWXbZBLvDsH205JckNhmSOY1Q6b2Y6TtgAAbUkncfJkaCpn3L2et40lscX4tUOTbztoDDFb486iCI0HrJDxuT2ObRtrfzdr6j6nzow+p2vqfzcba45tuT2Q8QesCI3OolvjDDE7aJNvtUPF+CWxt429nmfcaCryZCdxbUkAAJO22Y4Om5jVmSNDYUly2047B0u8bZDFl/TOpRwyXfhy+VNwDkfCcpLllIHIlRXCWDJzwliVFYHI5ZRykkfCcA75U/hyMl2lHPTOxZdtkEu8OwfbTklyQ2GZI5jVDpvZjpO2AABtSSdx8mRoKmfcvZ63jSWxxfi1Q5NvO2gMMVvjzqIIjQeskPG5PY5txGkbNjrrrqsBlOatTuzyMQ5f3V88NbvzrLknoUi0FemgJsdQE1XIMqv61caSruu7h+efHOBCjUnPLgAAB9McvLLEnucGFH41bj1mKbUDJt6cyX7OUenkDMUo3DCjIsYFFejr1i3ZlOxJB9gc/yOgGjQGvvDj453kWPE/A9gR/hZ5EQMFCPhe8KnwivfQAOIHAApLBzkC4v03/Cz9Fv8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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';
+var alertAudioEl=null;
+function ensureAlertAudioEl(){
+  if(!alertAudioEl){
+    alertAudioEl=new Audio('data:audio/wav;base64,'+ALERT_WAV_B64);
+    alertAudioEl.volume=1.0;
+    alertAudioEl.preload='auto';
+  }
+  return alertAudioEl;
+}
 var alertAudioCtx=null;
 function ensureAudioCtx(){
   try{
@@ -4927,6 +4940,13 @@ function ensureAudioCtx(){
       if(AC)alertAudioCtx=new AC();
     }
     if(alertAudioCtx&&alertAudioCtx.state==='suspended')alertAudioCtx.resume();
+  }catch(e){}
+  try{
+    // <audio>要素側もユーザー操作のタイミングで一度再生→即停止して「解錠」しておく
+    var el=ensureAlertAudioEl();
+    var p=el.play();
+    if(p&&p.catch)p.catch(function(){});
+    el.pause();el.currentTime=0;
   }catch(e){}
 }
 function playAlertSound(){
@@ -4942,12 +4962,20 @@ function playAlertSound(){
       osc.type='sine';
       osc.frequency.value=880;
       gain.gain.setValueAtTime(0.0001,now+t);
-      gain.gain.exponentialRampToValueAtTime(0.4,now+t+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.85,now+t+0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001,now+t+0.26);
       osc.connect(gain);gain.connect(ctx.destination);
       osc.start(now+t);
       osc.stop(now+t+0.3);
     });
+  }catch(e){}
+  // <audio>要素側でも再生（Web Audioが無音になる環境向けの保険）。
+  // 毎回新しいAudioインスタンスにして、状態が固着して鳴らなくなるのを防ぐ。
+  try{
+    var el2=new Audio('data:audio/wav;base64,'+ALERT_WAV_B64);
+    el2.volume=1.0;
+    var p2=el2.play();
+    if(p2&&p2.catch)p2.catch(function(){});
   }catch(e){}
   if(navigator.vibrate){try{navigator.vibrate([200,100,200,100,200]);}catch(e){}}
 }
@@ -4973,7 +5001,7 @@ function showToast(msg,duration){
 }
 
 /* ── TIMER ── */
-var CIRC=2*Math.PI*70;
+var CIRC=2*Math.PI*66;
 function setRing(r){document.getElementById('ringProg').style.strokeDashoffset=CIRC*(1-r)}
 
 // ── Wake Lock（タイマー動作中は画面ロックを防止） ──
@@ -5008,7 +5036,7 @@ function setTimerMode(mode,el){
     progRing.style.stroke='';progRing.style.filter='';
     document.getElementById('tPhase').textContent=S.pomo?'FOCUS':'TIMER';
     if(mode==='custom')document.getElementById('tPhase').textContent='CUSTOM';
-    document.getElementById('tDig').textContent=fs(S.sec);setRing(1);
+    document.getElementById('tDig').textContent=fs(S.sec);setRing(0);
   }
 }
 function applyCustomTime(){
@@ -5017,11 +5045,11 @@ function applyCustomTime(){
   var m=parseInt(document.getElementById('setMin').value)||0;
   var s=parseInt(document.getElementById('setSec').value)||0;
   var total=h*3600+m*60+s;if(total<=0){alert('時間を設定してください');return;}
-  S.sec=total;S.ringTotal=total;document.getElementById('tDig').textContent=fs(S.sec);setRing(1);document.getElementById('tPhase').textContent='CUSTOM';
+  S.sec=total;S.ringTotal=total;document.getElementById('tDig').textContent=fs(S.sec);setRing(0);document.getElementById('tPhase').textContent='CUSTOM';
 }
 function applyPreset(mins){
   if(S.running)stopTimer();
-  S.sec=mins*60;S.ringTotal=S.sec;document.getElementById('tDig').textContent=fs(S.sec);setRing(1);
+  S.sec=mins*60;S.ringTotal=S.sec;document.getElementById('tDig').textContent=fs(S.sec);setRing(0);
   document.getElementById('setHour').value=0;document.getElementById('setMin').value=mins;document.getElementById('setSec').value=0;
   document.getElementById('tPhase').textContent=mins+'MIN';
 }
@@ -5040,7 +5068,7 @@ function tickTimer(){
   if(remain<0)remain=0;
   S.sec=remain;
   document.getElementById('tDig').textContent=fs(S.sec);
-  setRing(S.sec/S.ringTotal);
+  setRing(1-S.sec/S.ringTotal);
   if(S.sec<=0)onTimerEnd();
 }
 function stopTimer(){
@@ -5052,7 +5080,7 @@ function resetTimer(){
   if(S.pomo){S.sec=S.WORK;S.pomoPhase='work';document.getElementById('tPhase').textContent='FOCUS';document.getElementById('ringProg').classList.remove('brk');}
   else if(S.timerMode==='custom'){var h=parseInt(document.getElementById('setHour').value)||0;var m=parseInt(document.getElementById('setMin').value)||0;var s=parseInt(document.getElementById('setSec').value)||0;S.sec=Math.max(60,h*3600+m*60+s);}
   else{S.sec=1500;}
-  document.getElementById('tDig').textContent=fs(S.sec);setRing(1);
+  document.getElementById('tDig').textContent=fs(S.sec);setRing(0);
 }
 function onTimerEnd(){
   clearInterval(S.iv);S.running=false;document.getElementById('startBtn').innerHTML='&#9654; START';document.getElementById('runInd').classList.remove('on');commitSession();
@@ -5063,7 +5091,7 @@ function onTimerEnd(){
     else{S.pomoPhase='work';S.sec=S.WORK;S.ringTotal=S.WORK;document.getElementById('tPhase').textContent='FOCUS';document.getElementById('ringProg').classList.remove('brk');showToast('休憩終了！');}
     renderPomoDots();
   }else{S.sec=S.ringTotal;showToast('タイマー終了！お疲れ様 ✨');}
-  document.getElementById('tDig').textContent=fs(S.sec);setRing(1);
+  document.getElementById('tDig').textContent=fs(S.sec);setRing(0);
 }
 function commitSession(){
   if(!S.sessionStart)return;var el=Math.floor((new Date()-S.sessionStart)/1000);S.sessionStart=null;
@@ -5074,7 +5102,7 @@ function togglePomo(){
   if(S.pomo){S.sec=S.WORK;S.pomoPhase='work';S.pomoN=0;document.getElementById('tPhase').textContent='FOCUS';document.getElementById('ringProg').classList.remove('brk');}
   else{S.sec=1500;document.getElementById('tPhase').textContent='TIMER';}
   if(S.running){clearInterval(S.iv);S.running=false;S.sessionStart=null;document.getElementById('startBtn').innerHTML='&#9654; START';document.getElementById('runInd').classList.remove('on');releaseWakeLock();}
-  document.getElementById('tDig').textContent=fs(S.sec);setRing(1);renderPomoDots();
+  document.getElementById('tDig').textContent=fs(S.sec);setRing(0);renderPomoDots();
 }
 function renderPomoDots(){
   var el=document.getElementById('pdots');if(!S.pomo){el.innerHTML='';return;}
