@@ -2090,6 +2090,7 @@ select.inp{cursor:pointer}
 .home-alert-lbl{font-family:var(--mono);font-size:.6rem;color:var(--or);letter-spacing:.18em;display:flex;align-items:center;gap:6px}
 .home-alert.important .home-alert-lbl{color:var(--red)}
 .home-alert-badge{font-family:var(--mono);font-size:.54rem;color:var(--red);border:1px solid var(--red);border-radius:9px;padding:1px 7px;letter-spacing:.06em}
+.home-alert-subject{font-family:var(--mono);font-size:.6rem;color:var(--cy);letter-spacing:.04em;margin-bottom:5px}
 .home-alert-reroll{font-family:var(--mono);font-size:.62rem;color:var(--txD);background:var(--bg2);border:1px solid var(--bdB);border-radius:2px;padding:4px 9px;cursor:pointer;transition:all .15s}
 .home-alert-reroll:hover{color:var(--cy);border-color:var(--cy)}
 .home-alert-text{font-size:.82rem;color:var(--txB);line-height:1.6;margin-bottom:6px}
@@ -2113,6 +2114,7 @@ select.inp{cursor:pointer}
 .mistake-item-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:8px}
 .mistake-date{font-family:var(--mono);font-size:.58rem;color:var(--txD);letter-spacing:.04em}
 .mistake-badge{font-family:var(--mono);font-size:.54rem;color:var(--red);border:1px solid var(--red);border-radius:9px;padding:1px 7px;letter-spacing:.05em;margin-left:8px}
+.mistake-subject{font-family:var(--mono);font-size:.62rem;color:var(--cy);letter-spacing:.03em;margin-bottom:5px}
 .mistake-actions{display:flex;gap:4px;flex-shrink:0}
 .mistake-act-btn{background:transparent;border:none;color:var(--txD);font-size:.8rem;cursor:pointer;padding:2px 5px;border-radius:2px;transition:all .15s}
 .mistake-act-btn:hover{color:var(--cy);background:var(--cyD)}
@@ -2924,6 +2926,7 @@ select.inp{cursor:pointer}
   <div class="card" style="margin-bottom:16px;border-color:var(--or)">
     <div class="stitle" id="missFormTitle">&#9888;&nbsp;ミスを記録する</div>
     <div class="miss-form-row">
+      <input class="inp" id="missSubject" placeholder="何の問題・単元で間違えた？（任意／例：政治経済 第3回 財政、化学 有機/エステルの構造決定）" style="font-family:var(--sans);font-size:.75rem;padding:8px 11px">
       <textarea class="miss-ta" id="missText" placeholder="どんなミス・勘違いをした？（例：符号を書き写す時に間違えた／問題文の「誤っているもの」を見落として正しいものを選んだ）" rows="2"></textarea>
       <textarea class="miss-ta fix-ta" id="missFix" placeholder="改善方法・次から気をつけること（例：計算後に符号だけもう一度見直す／設問の指示語に線を引いてから解く）" rows="2"></textarea>
     </div>
@@ -3105,6 +3108,7 @@ function applyPayload(remote) {
   S.mistakes = (remote.mistakes || []).map(function(m){
     if (m.shownCount === undefined) m.shownCount = 0;
     if (m.important === undefined) m.important = false;
+    if (m.subject === undefined) m.subject = '';
     return m;
   });
   lastSavedAt = remote.savedAt || 0;
@@ -5745,16 +5749,17 @@ function saveMemo(){S.memo=document.getElementById('memoTa').value;save()}
 var lastHomeMistakeId = null;
 
 function submitMistake(){
+  var subject = document.getElementById('missSubject').value.trim();
   var txt = document.getElementById('missText').value.trim();
   var fix = document.getElementById('missFix').value.trim();
   var important = document.getElementById('missImportant').checked;
   if(!txt){ alert('ミスの内容を入力してください'); return; }
   if(S.missEditId){
     var m = S.mistakes.find(function(x){return x.id===S.missEditId});
-    if(m){ m.text=txt; m.fix=fix; m.important=important; }
+    if(m){ m.subject=subject; m.text=txt; m.fix=fix; m.important=important; }
     showToast('✎ ミスを更新しました');
   } else {
-    S.mistakes.unshift({id:uid(),text:txt,fix:fix,important:important,createdAt:Date.now(),shownCount:0});
+    S.mistakes.unshift({id:uid(),subject:subject,text:txt,fix:fix,important:important,createdAt:Date.now(),shownCount:0});
     showToast('⚠ ミスを記録しました');
   }
   cancelMissEdit();
@@ -5766,6 +5771,7 @@ function editMistake(id){
   var m = S.mistakes.find(function(x){return x.id===id});
   if(!m) return;
   S.missEditId = id;
+  document.getElementById('missSubject').value = m.subject||'';
   document.getElementById('missText').value = m.text;
   document.getElementById('missFix').value = m.fix;
   document.getElementById('missImportant').checked = !!m.important;
@@ -5779,6 +5785,7 @@ function editMistake(id){
 
 function cancelMissEdit(){
   S.missEditId = null;
+  var s=document.getElementById('missSubject'); if(s) s.value='';
   var t=document.getElementById('missText'); if(t) t.value='';
   var f=document.getElementById('missFix'); if(f) f.value='';
   var c=document.getElementById('missImportant'); if(c) c.checked=false;
@@ -5834,6 +5841,7 @@ function renderMistakes(){
           : '<button class="mistake-act-btn" onclick="editMistake(\''+m.id+'\')" aria-label="編集">&#9998;</button>'
             + '<button class="mistake-act-btn del" onclick="askDeleteMistake(\''+m.id+'\')" aria-label="削除">&#215;</button>')
       + '</span></div>'
+      + (m.subject?'<div class="mistake-subject">'+esc(m.subject)+'</div>':'')
       + '<div class="mistake-text">'+esc(m.text)+'</div>'
       + (m.fix?'<div class="mistake-fix">'+esc(m.fix)+'</div>':'')
       + '</li>';
@@ -5869,7 +5877,8 @@ function renderHomeMistake(){
   lastHomeMistakeId = m.id;
   m.shownCount = (m.shownCount||0)+1;
   box.classList.toggle('important', !!m.important);
-  body.innerHTML = '<div class="home-alert-text">'+(m.important?'<span class="home-alert-badge">重要</span> ':'')+esc(m.text)+'</div>'
+  body.innerHTML = (m.subject?'<div class="home-alert-subject">'+esc(m.subject)+'</div>':'')
+    + '<div class="home-alert-text">'+(m.important?'<span class="home-alert-badge">重要</span> ':'')+esc(m.text)+'</div>'
     + (m.fix?'<div class="home-alert-fix">'+esc(m.fix)+'</div>':'');
   // shownCountはメモリ上で更新し、次の保存タイミング（追加/編集/削除やタイマー操作時）に自動で永続化される
   // （HOME表示のたびにクラウド書き込みを発生させないための措置）
