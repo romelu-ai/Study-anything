@@ -2071,6 +2071,7 @@ select.inp{cursor:pointer}
 .hc-exam:hover{border-color:var(--pu)}.hc-exam::after{background:radial-gradient(ellipse at top,rgba(167,139,250,.07),transparent 70%)}
 .hc-stats:hover{border-color:var(--or)}.hc-stats::after{background:radial-gradient(ellipse at top,rgba(255,107,43,.06),transparent 70%)}
 .hc-other:hover{border-color:var(--txD)}.hc-other::after{background:radial-gradient(ellipse at top,rgba(200,216,232,.04),transparent 70%)}
+.hc-miss:hover{border-color:var(--red)}.hc-miss::after{background:radial-gradient(ellipse at top,rgba(255,60,90,.07),transparent 70%)}
 .hcard-icon{font-size:1.9rem;margin-bottom:11px;display:block;position:relative;z-index:1}
 .hcard-name{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;color:var(--txB);margin-bottom:5px;position:relative;z-index:1}
 .hcard-desc{font-size:.69rem;color:var(--txD);line-height:1.55;position:relative;z-index:1}
@@ -2080,6 +2081,54 @@ select.inp{cursor:pointer}
 .hstat:last-child{border-right:none}
 .hstat-val{font-family:var(--mono);font-size:1.3rem;color:var(--cy);text-shadow:0 0 7px var(--cyG);display:block}
 .hstat-lbl{font-family:var(--mono);font-size:.56rem;color:var(--txD);letter-spacing:.1em;margin-top:3px}
+
+/* HOME MISTAKE BANNER */
+.home-alert{width:100%;max-width:800px;margin-bottom:32px;background:var(--bg1);border:1px solid var(--bdB);border-left:3px solid var(--or);border-radius:4px;padding:16px 20px;position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
+.home-alert:hover{border-color:var(--or);box-shadow:0 6px 24px rgba(255,107,43,.1)}
+.home-alert.important{border-left-color:var(--red);box-shadow:0 0 0 1px rgba(255,60,90,.15)}
+.home-alert-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.home-alert-lbl{font-family:var(--mono);font-size:.6rem;color:var(--or);letter-spacing:.18em;display:flex;align-items:center;gap:6px}
+.home-alert.important .home-alert-lbl{color:var(--red)}
+.home-alert-badge{font-family:var(--mono);font-size:.54rem;color:var(--red);border:1px solid var(--red);border-radius:9px;padding:1px 7px;letter-spacing:.06em}
+.home-alert-reroll{font-family:var(--mono);font-size:.62rem;color:var(--txD);background:var(--bg2);border:1px solid var(--bdB);border-radius:2px;padding:4px 9px;cursor:pointer;transition:all .15s}
+.home-alert-reroll:hover{color:var(--cy);border-color:var(--cy)}
+.home-alert-text{font-size:.82rem;color:var(--txB);line-height:1.6;margin-bottom:6px}
+.home-alert-fix{font-size:.74rem;color:var(--gn);line-height:1.6;padding-left:14px;position:relative}
+.home-alert-fix::before{content:'→';position:absolute;left:0;color:var(--gn)}
+.home-alert-empty{font-size:.72rem;color:var(--txD);line-height:1.6}
+
+/* MISS PAGE */
+.miss-form-row{display:flex;flex-direction:column;gap:9px;margin-bottom:12px}
+.miss-ta{background:var(--bg2);border:1px solid var(--bdB);color:var(--tx);font-family:var(--sans);font-size:.78rem;padding:9px 11px;outline:none;border-radius:2px;transition:border-color .2s;width:100%;resize:vertical;line-height:1.6}
+.miss-ta:focus{border-color:var(--cy)}
+.miss-ta.fix-ta:focus{border-color:var(--gn)}
+.miss-form-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.miss-important-chk{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:.63rem;color:var(--txD);cursor:pointer;user-select:none}
+.miss-important-chk input{accent-color:var(--red);width:14px;height:14px;cursor:pointer}
+.miss-important-chk.on{color:var(--red)}
+.miss-form-btns{display:flex;gap:8px}
+.miss-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.mistake-item{background:var(--bg2);border:1px solid var(--bd);border-left:3px solid var(--bdB);border-radius:3px;padding:13px 14px;position:relative}
+.mistake-item.important{border-left-color:var(--red);background:linear-gradient(90deg,rgba(255,60,90,.06),transparent 40%)}
+.mistake-item-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:8px}
+.mistake-date{font-family:var(--mono);font-size:.58rem;color:var(--txD);letter-spacing:.04em}
+.mistake-badge{font-family:var(--mono);font-size:.54rem;color:var(--red);border:1px solid var(--red);border-radius:9px;padding:1px 7px;letter-spacing:.05em;margin-left:8px}
+.mistake-actions{display:flex;gap:4px;flex-shrink:0}
+.mistake-act-btn{background:transparent;border:none;color:var(--txD);font-size:.8rem;cursor:pointer;padding:2px 5px;border-radius:2px;transition:all .15s}
+.mistake-act-btn:hover{color:var(--cy);background:var(--cyD)}
+.mistake-act-btn.del:hover{color:var(--red);background:rgba(255,60,90,.1)}
+.mistake-act-btn.confirm-yes{color:var(--red)}
+.mistake-act-btn.confirm-yes:hover{color:var(--red);background:rgba(255,60,90,.15)}
+.mistake-confirm-txt{font-family:var(--mono);font-size:.6rem;color:var(--red);margin-right:2px;white-space:nowrap}
+.mistake-text{font-size:.8rem;color:var(--txB);line-height:1.65;margin-bottom:6px;white-space:pre-wrap}
+.mistake-fix{font-size:.73rem;color:var(--gn);line-height:1.6;padding-left:15px;position:relative;white-space:pre-wrap}
+.mistake-fix::before{content:'→';position:absolute;left:0;color:var(--gn)}
+.mistake-empty{font-family:var(--mono);font-size:.65rem;color:var(--txD);padding:20px 0;text-align:center;line-height:1.8}
+.miss-stat-row{display:flex;gap:0;background:var(--bg1);border:1px solid var(--bd);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.miss-stat{flex:1;padding:12px 8px;text-align:center;border-right:1px solid var(--bd)}
+.miss-stat:last-child{border-right:none}
+.miss-stat-val{font-family:var(--mono);font-size:1.1rem;color:var(--or);display:block}
+.miss-stat-lbl{font-family:var(--mono);font-size:.54rem;color:var(--txD);letter-spacing:.08em;margin-top:2px}
 
 /* TIMER MODES */
 .timer-mode-tabs{display:flex;border:1px solid var(--bdB);border-radius:2px;overflow:hidden}
@@ -2261,6 +2310,8 @@ select.inp{cursor:pointer}
 .nav-clock{display:none}
 .page{padding:12px 10px}
 .ntab{padding:0 10px}
+.home-alert-head{flex-wrap:wrap;row-gap:6px}
+.miss-form-foot{align-items:flex-start}
 }
 
 </style>
@@ -2307,6 +2358,7 @@ select.inp{cursor:pointer}
     <div class="ntab"     id="tab-exam"  onclick="goPage('exam')">&#128200;&nbsp;EXAM</div>
     <div class="ntab"     id="tab-stats" onclick="goPage('stats')">&#9641;&nbsp;STATS</div>
     <div class="ntab"     id="tab-other" onclick="goPage('other')">&#9776;&nbsp;OTHER</div>
+    <div class="ntab"     id="tab-miss"  onclick="goPage('miss')">&#9888;&nbsp;MISS</div>
   </div>
 </nav>
 
@@ -2338,6 +2390,13 @@ select.inp{cursor:pointer}
       <div class="home-logo">STUDY<span>//</span>OS</div>
       <div class="home-sub">YOUR PERSONAL STUDY DASHBOARD</div>
       <div class="home-date-disp" id="homeDateDisp">--</div>
+    </div>
+    <div class="home-alert" id="homeMissBox" onclick="goPage('miss')">
+      <div class="home-alert-head">
+        <div class="home-alert-lbl">&#9888;&nbsp;今日の教訓</div>
+        <button class="home-alert-reroll" onclick="event.stopPropagation();rerollHomeMistake()">&#128256;&nbsp;別のを見る</button>
+      </div>
+      <div id="homeMissBody"></div>
     </div>
     <div class="home-cards">
       <div class="hcard hc-timer" onclick="goPage('timer')">
@@ -2375,6 +2434,12 @@ select.inp{cursor:pointer}
         <div class="hcard-name">OTHER</div>
         <div class="hcard-desc">勉強用YouTubeや参考URLを登録。フリーメモ欄</div>
         <div class="hcard-accent" style="border-color:var(--txD);color:var(--txD)" id="hBadgeLinks">0件</div>
+      </div>
+      <div class="hcard hc-miss" onclick="goPage('miss')">
+        <span class="hcard-icon">&#9888;</span>
+        <div class="hcard-name">MISS</div>
+        <div class="hcard-desc">自分のミス・勘違いと改善方法を記録して見返す</div>
+        <div class="hcard-accent" style="border-color:var(--red);color:var(--red)" id="hBadgeMiss">0件</div>
       </div>
     </div>
     <div class="home-stats">
@@ -2853,6 +2918,40 @@ select.inp{cursor:pointer}
 </div>
 
 
+<!-- MISS -->
+
+<div class="page" id="page-miss">
+  <div class="card" style="margin-bottom:16px;border-color:var(--or)">
+    <div class="stitle" id="missFormTitle">&#9888;&nbsp;ミスを記録する</div>
+    <div class="miss-form-row">
+      <textarea class="miss-ta" id="missText" placeholder="どんなミス・勘違いをした？（例：符号を書き写す時に間違えた／問題文の「誤っているもの」を見落として正しいものを選んだ）" rows="2"></textarea>
+      <textarea class="miss-ta fix-ta" id="missFix" placeholder="改善方法・次から気をつけること（例：計算後に符号だけもう一度見直す／設問の指示語に線を引いてから解く）" rows="2"></textarea>
+    </div>
+    <div class="miss-form-foot">
+      <label class="miss-important-chk" id="missImportantLbl" for="missImportant">
+        <input type="checkbox" id="missImportant" onchange="document.getElementById('missImportantLbl').classList.toggle('on',this.checked)">
+        特に重要（絶対に忘れたくない）
+      </label>
+      <div class="miss-form-btns">
+        <button class="sbtn" id="missCancelBtn" onclick="cancelMissEdit()" style="border-color:var(--bdB);color:var(--txD);display:none">キャンセル</button>
+        <button class="sbtn bo" id="missSubmitBtn" onclick="submitMistake()">+ 記録する</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="miss-stat-row">
+    <div class="miss-stat"><span class="miss-stat-val" id="missStatTotal">0</span><div class="miss-stat-lbl">TOTAL</div></div>
+    <div class="miss-stat"><span class="miss-stat-val" id="missStatImportant" style="color:var(--red)">0</span><div class="miss-stat-lbl">重要</div></div>
+    <div class="miss-stat"><span class="miss-stat-val" id="missStatShown" style="color:var(--gn)">0</span><div class="miss-stat-lbl">HOME表示回数</div></div>
+  </div>
+
+  <div class="card">
+    <div class="stitle">ミス一覧（新しい順）</div>
+    <ul class="miss-list" id="missList"></ul>
+  </div>
+</div>
+
+
 <!-- CALENDAR MODAL -->
 
 <div class="s-overlay" id="calOverlay">
@@ -2989,7 +3088,8 @@ function buildPayload() {
   });
   return {
     books: books, logs: S.logs, exams: exLite, events: S.events,
-    goalH: S.goalH, links: S.links, memo: S.memo, savedAt: lastSavedAt
+    goalH: S.goalH, links: S.links, memo: S.memo, mistakes: S.mistakes,
+    savedAt: lastSavedAt
   };
 }
 
@@ -3002,6 +3102,11 @@ function applyPayload(remote) {
   S.goalH = remote.goalH || 4;
   S.links = remote.links || [];
   S.memo = remote.memo || '';
+  S.mistakes = (remote.mistakes || []).map(function(m){
+    if (m.shownCount === undefined) m.shownCount = 0;
+    if (m.important === undefined) m.important = false;
+    return m;
+  });
   lastSavedAt = remote.savedAt || 0;
 }
 
@@ -3130,7 +3235,7 @@ function cloudLoad(userId, callback) {
       }
       // ローカルにも新形式データなし → 旧BOOKLOG/旧Scheduleからの移行を試みる
       if (migrateLegacyData(userId)) { callback(null); save(); return; }
-      books = []; S.logs = {}; S.exams = []; S.events = []; S.goalH = 4; S.links = []; S.memo = ''; lastSavedAt = 0;
+      books = []; S.logs = {}; S.exams = []; S.events = []; S.goalH = 4; S.links = []; S.memo = ''; S.mistakes = []; lastSavedAt = 0;
       callback(null);
     })
     .catch(function() {
@@ -3141,7 +3246,7 @@ function cloudLoad(userId, callback) {
         try { applyPayload(JSON.parse(local)); callback(null); return; } catch(e) {}
       }
       if (migrateLegacyData(userId)) { callback(null); return; }
-      books = []; S.logs = {}; S.exams = []; S.events = []; S.goalH = 4; S.links = []; S.memo = ''; lastSavedAt = 0;
+      books = []; S.logs = {}; S.exams = []; S.events = []; S.goalH = 4; S.links = []; S.memo = ''; S.mistakes = []; lastSavedAt = 0;
       callback('storage error');
     });
 }
@@ -3463,7 +3568,7 @@ function doLogout() {
   if (!confirm('ログアウトしますか？\n（データはクラウドに保存済みです）')) return;
   currentUserId = null;
   books = [];
-  S.logs = {}; S.exams = []; S.events = []; S.links = []; S.memo = ''; S.goalH = 4;
+  S.logs = {}; S.exams = []; S.events = []; S.links = []; S.memo = ''; S.goalH = 4; S.mistakes = [];
   lastSavedAt = 0;
   clearTimeout(syncTimer);
   document.getElementById('login-screen').classList.remove('hidden');
@@ -4675,7 +4780,8 @@ var S={
   calView:'month',calY:0,calM:0,
   calEditId:null,calEditDate:null,evColor:0,
   exSubjN:0,exPendingImgs:[],exPendingPdfs:[],exPendingLinks:[],
-  links:[],memo:''
+  links:[],memo:'',
+  mistakes:[],missEditId:null
 };
 var ECOLS=['#00d4ff','#00ff9d','#ff6b2b','#ffd166','#a78bfa','#f472b6'];
 var ECLBL=['シアン','グリーン','オレンジ','イエロー','パープル','ピンク'];
@@ -4842,6 +4948,7 @@ function goPage(id){
   if(id==='exam'){renderExamList();renderExamChart()}
   if(id==='stats'){renderStats();renderWeekChart();logEditToday()}
   if(id==='other'){renderLinks();renderBackupInfo();var mt=document.getElementById('memoTa');if(mt)mt.value=S.memo;}
+  if(id==='miss'){cancelMissEdit();pendingDeleteMissId=null;renderMistakes();}
 }
 
 function renderHome(){
@@ -4862,6 +4969,8 @@ function renderHome(){
   document.getElementById('hBadgeCal').textContent=todayEvs.length+'件';
   document.getElementById('hBadgeExam').textContent=S.exams.length+'回';
   document.getElementById('hBadgeLinks').textContent=S.links.length+'件';
+  document.getElementById('hBadgeMiss').textContent=S.mistakes.length+'件';
+  renderHomeMistake();
 }
 
 function tick(){
@@ -5631,6 +5740,144 @@ function openPdfViewer(eid,pi){var ex=S.exams.find(function(e){return e.id===eid
 function closePdfViewer(){document.getElementById('pdfOverlay').classList.remove('on');document.getElementById('pdfFrame').src='';if(_pdfBlobUrl){URL.revokeObjectURL(_pdfBlobUrl);_pdfBlobUrl=null;}}
 
 function saveMemo(){S.memo=document.getElementById('memoTa').value;save()}
+
+/* ── MISS（ミス帳）────────────────────────── */
+var lastHomeMistakeId = null;
+
+function submitMistake(){
+  var txt = document.getElementById('missText').value.trim();
+  var fix = document.getElementById('missFix').value.trim();
+  var important = document.getElementById('missImportant').checked;
+  if(!txt){ alert('ミスの内容を入力してください'); return; }
+  if(S.missEditId){
+    var m = S.mistakes.find(function(x){return x.id===S.missEditId});
+    if(m){ m.text=txt; m.fix=fix; m.important=important; }
+    showToast('✎ ミスを更新しました');
+  } else {
+    S.mistakes.unshift({id:uid(),text:txt,fix:fix,important:important,createdAt:Date.now(),shownCount:0});
+    showToast('⚠ ミスを記録しました');
+  }
+  cancelMissEdit();
+  save();
+  renderMistakes();
+}
+
+function editMistake(id){
+  var m = S.mistakes.find(function(x){return x.id===id});
+  if(!m) return;
+  S.missEditId = id;
+  document.getElementById('missText').value = m.text;
+  document.getElementById('missFix').value = m.fix;
+  document.getElementById('missImportant').checked = !!m.important;
+  document.getElementById('missImportantLbl').classList.toggle('on', !!m.important);
+  document.getElementById('missFormTitle').innerHTML = '&#9998;&nbsp;ミスを編集';
+  document.getElementById('missSubmitBtn').textContent = '&#10003; 更新する';
+  document.getElementById('missCancelBtn').style.display = '';
+  var missTextEl = document.getElementById('missText');
+  if(missTextEl.scrollIntoView) missTextEl.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function cancelMissEdit(){
+  S.missEditId = null;
+  var t=document.getElementById('missText'); if(t) t.value='';
+  var f=document.getElementById('missFix'); if(f) f.value='';
+  var c=document.getElementById('missImportant'); if(c) c.checked=false;
+  var l=document.getElementById('missImportantLbl'); if(l) l.classList.remove('on');
+  var ft=document.getElementById('missFormTitle'); if(ft) ft.innerHTML='&#9888;&nbsp;ミスを記録する';
+  var sb=document.getElementById('missSubmitBtn'); if(sb) sb.innerHTML='+ 記録する';
+  var cb=document.getElementById('missCancelBtn'); if(cb) cb.style.display='none';
+}
+
+function deleteMistake(id){
+  S.mistakes = S.mistakes.filter(function(m){return m.id!==id});
+  if(S.missEditId===id) cancelMissEdit();
+  if(pendingDeleteMissId===id) pendingDeleteMissId=null;
+  save();
+  renderMistakes();
+}
+
+function askDeleteMistake(id){
+  pendingDeleteMissId = id;
+  renderMistakes();
+}
+
+function cancelDeleteMistake(){
+  pendingDeleteMissId = null;
+  renderMistakes();
+}
+
+var pendingDeleteMissId = null;
+
+function renderMistakes(){
+  var el = document.getElementById('missList');
+  if(!el) return;
+  document.getElementById('missStatTotal').textContent = S.mistakes.length;
+  document.getElementById('missStatImportant').textContent = S.mistakes.filter(function(m){return m.important}).length;
+  document.getElementById('missStatShown').textContent = S.mistakes.reduce(function(a,m){return a+(m.shownCount||0)},0);
+  if(!S.mistakes.length){
+    el.innerHTML = '<li class="mistake-empty">// まだミスは記録されていません<br>下のフォームから最初の1件を記録してみましょう</li>';
+    return;
+  }
+  var html = '';
+  S.mistakes.forEach(function(m){
+    var d = new Date(m.createdAt||Date.now());
+    var ds = d.getFullYear()+'.'+p2(d.getMonth()+1)+'.'+p2(d.getDate());
+    var confirming = (pendingDeleteMissId===m.id);
+    html += '<li class="mistake-item'+(m.important?' important':'')+'">'
+      + '<div class="mistake-item-head">'
+      + '<span><span class="mistake-date">'+ds+'</span>'+(m.important?'<span class="mistake-badge">&#9888; 重要</span>':'')+'</span>'
+      + '<span class="mistake-actions">'
+      + (confirming
+          ? '<span class="mistake-confirm-txt">削除する？</span>'
+            + '<button class="mistake-act-btn confirm-yes" onclick="deleteMistake(\''+m.id+'\')" aria-label="削除を確定">&#10003;</button>'
+            + '<button class="mistake-act-btn" onclick="cancelDeleteMistake()" aria-label="キャンセル">&#8630;</button>'
+          : '<button class="mistake-act-btn" onclick="editMistake(\''+m.id+'\')" aria-label="編集">&#9998;</button>'
+            + '<button class="mistake-act-btn del" onclick="askDeleteMistake(\''+m.id+'\')" aria-label="削除">&#215;</button>')
+      + '</span></div>'
+      + '<div class="mistake-text">'+esc(m.text)+'</div>'
+      + (m.fix?'<div class="mistake-fix">'+esc(m.fix)+'</div>':'')
+      + '</li>';
+  });
+  el.innerHTML = html;
+}
+
+// 重要フラグのミスほど出やすいよう重み付けしてランダム選出（直前に出したものは連続で避ける）
+function pickWeightedMistake(){
+  var list = S.mistakes;
+  if(!list.length) return null;
+  var pool = list;
+  if(list.length>1 && lastHomeMistakeId){
+    var filtered = list.filter(function(m){return m.id!==lastHomeMistakeId});
+    if(filtered.length) pool = filtered;
+  }
+  var weighted = [];
+  pool.forEach(function(m){ for(var i=0;i<(m.important?3:1);i++) weighted.push(m); });
+  return weighted[Math.floor(Math.random()*weighted.length)];
+}
+
+function renderHomeMistake(){
+  var box = document.getElementById('homeMissBox');
+  var body = document.getElementById('homeMissBody');
+  if(!box||!body) return;
+  if(!S.mistakes.length){
+    box.classList.remove('important');
+    body.innerHTML = '<div class="home-alert-empty">まだミスの記録がありません。MISSページから記録すると、ここにランダムで表示されて忘れ防止に役立ちます。</div>';
+    return;
+  }
+  var m = pickWeightedMistake();
+  if(!m) return;
+  lastHomeMistakeId = m.id;
+  m.shownCount = (m.shownCount||0)+1;
+  box.classList.toggle('important', !!m.important);
+  body.innerHTML = '<div class="home-alert-text">'+(m.important?'<span class="home-alert-badge">重要</span> ':'')+esc(m.text)+'</div>'
+    + (m.fix?'<div class="home-alert-fix">'+esc(m.fix)+'</div>':'');
+  // shownCountはメモリ上で更新し、次の保存タイミング（追加/編集/削除やタイマー操作時）に自動で永続化される
+  // （HOME表示のたびにクラウド書き込みを発生させないための措置）
+}
+
+function rerollHomeMistake(){
+  renderHomeMistake();
+}
 
 /* ── STATS LOG EDIT ── */
 function logEditToday(){
