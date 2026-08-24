@@ -3596,7 +3596,7 @@ function doLogin(userId) {
   }
 
   currentUserId = userId;
-  try { localStorage.setItem('booklog_last_user', userId); } catch(e) {}
+  // 前回ログインIDを保存すると次回起動時に自動でパスワード欄へ入力されてしまうため、保存しない
 
   var btn = document.getElementById('btn-login');
   var errEl = document.getElementById('login-error');
@@ -4853,9 +4853,8 @@ document.addEventListener('DOMContentLoaded', function() {
   loginBtn.addEventListener('click', attemptLogin);
   loginInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') attemptLogin(); });
 
-  var lastUser = null;
-  try { lastUser = localStorage.getItem('booklog_last_user'); } catch(e) {}
-  if (lastUser) loginInput.value = lastUser;
+  // セキュリティのため、以前保存されていたIDは自動入力せず破棄する（次回起動時に毎回手入力が必要）
+  try { localStorage.removeItem('booklog_last_user'); } catch(e) {}
 
   document.getElementById('btn-logout').addEventListener('click', doLogout);
 
