@@ -659,6 +659,9 @@ header {
   border-radius: 10px;
   padding: 12px;
 }
+/* 章（単元）をすでに開いている間は、単元スコープの編集パネル（この単元に問題を追加／ドラッグで並び替え／選択した問題を削除）を使ってもらうため、
+   単元名を都度入力する汎用の「問題を追加」ツールは目次画面でのみ表示する */
+.prob-view.active ~ .add-prob-section { display: none; }
 .add-prob-title { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 10px; }
 .add-prob-row { display: flex; flex-direction: column; gap: 8px; }
 .add-prob-row .form-input { width: 100%; }
@@ -977,6 +980,33 @@ header {
 }
 .drag-handle:active { cursor: grabbing; background: rgba(255,255,255,0.06); }
 .edit-mode .drag-handle { display: flex; }
+
+.prob-select-cbx { display: none; width: 19px; height: 19px; flex-shrink: 0; accent-color: var(--cyan); cursor: pointer; }
+.edit-mode .prob-select-cbx { display: inline-block; }
+.prob-row.selected { background: rgba(0,229,255,0.06); }
+
+.prob-edit-quick-add { margin-bottom: 16px; }
+.prob-edit-block-label { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 8px; }
+.quick-add-row { display: flex; gap: 6px; }
+.quick-add-row .form-input { flex: 1; font-size: 14px; padding: 10px 12px; min-width: 0; }
+.btn-quick-add {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .5px; padding: 0 14px;
+  border: 1px solid var(--cyan); background: rgba(0,229,255,.08); color: var(--cyan);
+  border-radius: 8px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+}
+.btn-quick-add:hover { background: rgba(0,229,255,.16); }
+
+.prob-edit-select-del { margin-bottom: 14px; }
+.select-del-hint { font-family: var(--mono); font-size: 10px; color: var(--text-dim); opacity: .75; margin-bottom: 8px; }
+.btn-delete-selected {
+  width: 100%; font-family: var(--mono); font-size: 11px; letter-spacing: .5px; padding: 11px;
+  border: 1px solid rgba(255,60,90,0.4); background: rgba(255,60,90,0.08); color: #ff3c5a;
+  border-radius: 8px; cursor: pointer;
+}
+.btn-delete-selected:hover:not(:disabled) { background: rgba(255,60,90,0.16); }
+.btn-delete-selected:disabled { opacity: .35; cursor: not-allowed; }
+
+.prob-edit-drag-hint { font-family: var(--mono); font-size: 10px; color: var(--text-dim); opacity: .75; letter-spacing: .3px; display: flex; align-items: center; gap: 6px; }
 
 .prob-num-cell { flex: 1; min-width: 0; }
 .prob-page-cell {
@@ -1548,86 +1578,6 @@ header {
   height: 1px;
   background: rgba(255,123,0,0.3);
 }
-
-/* リナンバーブロック */
-.renumber-block {
-  margin-bottom: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.renumber-block-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-.renumber-inputs {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 8px;
-  align-items: end;
-}
-.renumber-inputs label {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  display: block;
-  margin-bottom: 4px;
-  letter-spacing: 1px;
-}
-.renumber-sep {
-  font-family: var(--mono);
-  font-size: 14px;
-  color: var(--text-dim);
-  text-align: center;
-  padding-top: 28px;
-}
-.btn-renumber {
-  font-family: var(--mono);
-  font-size: 13px;
-  padding: 12px 14px;
-  border: 1px solid var(--cyan);
-  background: rgba(0,229,255,0.08);
-  color: var(--cyan);
-  cursor: pointer;
-  border-radius: 8px;
-  -webkit-transition: all .15s;
-  transition: all .15s;
-  width: 100%;
-  min-height: 48px;
-}
-.btn-renumber:active { background: rgba(0,229,255,0.22); }
-
-/* 章削除ブロック */
-.delete-unit-block { }
-.delete-unit-block-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-.btn-delete-unit {
-  font-family: var(--mono);
-  font-size: 13px;
-  padding: 12px 14px;
-  border: 1px solid var(--red);
-  background: rgba(255,60,90,0.08);
-  color: var(--red);
-  cursor: pointer;
-  border-radius: 8px;
-  -webkit-transition: all .15s;
-  transition: all .15s;
-  width: 100%;
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.btn-delete-unit:active { background: rgba(255,60,90,0.22); }
 
 /* ── TOC 編集モード・ドラッグ並び替え ── */
 .toc-unit-card.toc-edit-mode {
@@ -3855,6 +3805,59 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── タッチ対応の並び替え（Pointer Events方式） ──────────────────────────
+// HTML5ネイティブのdraggable属性はマウス操作前提でスマホ等のタッチでは発火しないため、
+// マウス・タッチ・ペンいずれでも動作するPointer Eventsで統一的にドラッグ並び替えを実装する。
+function enablePointerReorder(container, opts) {
+  var itemSel = opts.itemSelector;
+  var handleSel = opts.handleSelector;
+  var draggingClass = opts.draggingClass || 'dragging';
+  var overClass = opts.dragOverClass || 'drag-over';
+
+  function allItems() {
+    return Array.prototype.slice.call(container.querySelectorAll(itemSel));
+  }
+  function clearOverClasses() {
+    allItems().forEach(function(it){ it.classList.remove(overClass); });
+  }
+
+  container.querySelectorAll(handleSel).forEach(function(handle) {
+    handle.style.touchAction = 'none';
+    handle.addEventListener('pointerdown', function(e) {
+      var srcItem = handle.closest(itemSel);
+      if (!srcItem) return;
+      e.preventDefault();
+      srcItem.classList.add(draggingClass);
+      try { handle.setPointerCapture(e.pointerId); } catch(err) {}
+
+      function onMove(ev) {
+        var elAt = document.elementFromPoint(ev.clientX, ev.clientY);
+        var overItem = elAt ? elAt.closest(itemSel) : null;
+        clearOverClasses();
+        if (overItem && overItem !== srcItem && container.contains(overItem)) {
+          overItem.classList.add(overClass);
+        }
+      }
+      function onUp(ev) {
+        handle.removeEventListener('pointermove', onMove);
+        handle.removeEventListener('pointerup', onUp);
+        handle.removeEventListener('pointercancel', onUp);
+        try { handle.releasePointerCapture(ev.pointerId); } catch(err) {}
+        var elAt = document.elementFromPoint(ev.clientX, ev.clientY);
+        var overItem = elAt ? elAt.closest(itemSel) : null;
+        srcItem.classList.remove(draggingClass);
+        clearOverClasses();
+        if (overItem && overItem !== srcItem && container.contains(overItem)) {
+          opts.onDrop(srcItem, overItem);
+        }
+      }
+      handle.addEventListener('pointermove', onMove);
+      handle.addEventListener('pointerup', onUp);
+      handle.addEventListener('pointercancel', onUp);
+    });
+  });
+}
+
 function deleteBook(id) {
   if (!confirm('この参考書を削除しますか？\n（学習時間ログ・写真も削除されます）')) return;
   books = books.filter(function(b){ return b.id !== id; });
@@ -4036,7 +4039,6 @@ function renderTocView(book, container, startEditMode) {
   var units = info.units;
   var unitMap = info.unitMap;
   var isEditMode = !!startEditMode;
-  var dragSrcIdx = null;
 
   function rebuild(editMode) {
     isEditMode = editMode;
@@ -4138,38 +4140,6 @@ function renderTocView(book, container, startEditMode) {
         };
         card.appendChild(delBtn);
 
-        card.draggable = true;
-        card.addEventListener('dragstart', function(e) {
-          dragSrcIdx = ui;
-          card.classList.add('toc-dragging');
-          e.dataTransfer.effectAllowed = 'move';
-        });
-        card.addEventListener('dragend', function() {
-          card.classList.remove('toc-dragging');
-          container.querySelectorAll('.toc-unit-card').forEach(function(c){ c.classList.remove('toc-drag-over'); });
-        });
-        card.addEventListener('dragover', function(e) {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'move';
-          container.querySelectorAll('.toc-unit-card').forEach(function(c){ c.classList.remove('toc-drag-over'); });
-          card.classList.add('toc-drag-over');
-        });
-        card.addEventListener('drop', function(e) {
-          e.preventDefault();
-          if (dragSrcIdx === null || dragSrcIdx === ui) return;
-          var moved = units.splice(dragSrcIdx, 1)[0];
-          units.splice(ui, 0, moved);
-          var newProblems = [];
-          units.forEach(function(unitName) {
-            (unitMap[unitName] || []).forEach(function(item) { newProblems.push(item.p); });
-          });
-          book.problems = newProblems;
-          var newInfo = buildUnitMap(book.problems);
-          units = newInfo.units;
-          unitMap = newInfo.unitMap;
-          save();
-          rebuild(true);
-        });
       } else {
         var nameDiv = document.createElement('div');
         nameDiv.className = 'toc-unit-name';
@@ -4197,6 +4167,32 @@ function renderTocView(book, container, startEditMode) {
     container.innerHTML = '';
     container.appendChild(hdr);
     container.appendChild(grid);
+
+    if (editMode) {
+      enablePointerReorder(grid, {
+        itemSelector: '.toc-unit-card',
+        handleSelector: '.toc-drag-handle',
+        draggingClass: 'toc-dragging',
+        dragOverClass: 'toc-drag-over',
+        onDrop: function(srcCard, targetCard) {
+          var srcIdx = parseInt(srcCard.dataset.unitIdx, 10);
+          var targetIdx = parseInt(targetCard.dataset.unitIdx, 10);
+          if (isNaN(srcIdx) || isNaN(targetIdx) || srcIdx === targetIdx) return;
+          var moved = units.splice(srcIdx, 1)[0];
+          units.splice(targetIdx, 0, moved);
+          var newProblems = [];
+          units.forEach(function(unitName) {
+            (unitMap[unitName] || []).forEach(function(item) { newProblems.push(item.p); });
+          });
+          book.problems = newProblems;
+          var newInfo = buildUnitMap(book.problems);
+          units = newInfo.units;
+          unitMap = newInfo.unitMap;
+          save();
+          rebuild(true);
+        }
+      });
+    }
   }
 
   rebuild(isEditMode);
@@ -4245,6 +4241,7 @@ function showProbView(book, targetUnit) {
     probRows +=
       '<div class="prob-row" data-prob-row="' + i + '">' +
         '<div class="drag-handle" data-drag-pi="' + i + '">⠿</div>' +
+        '<input type="checkbox" class="prob-select-cbx" data-pi="' + i + '">' +
         '<div class="prob-num-cell">' +
           '<button class="prob-num-btn' + (hasNote ? ' has-note' : '') + '" data-open-pd="' + i + '" id="prob-num-btn-' + i + '">' + esc(p.num) + '</button>' +
           '<input class="prob-num-input" data-pi="' + i + '" id="prob-num-input-' + i + '" value="' + esc(p.num||'') + '" placeholder="問題番号">' +
@@ -4261,43 +4258,85 @@ function showProbView(book, targetUnit) {
 
   probContent.innerHTML = '<div class="prob-list" id="prob-list">' + probRows + '</div>';
   bindProbListEvents(book, probContent);
+  bindProbDragEvents(book, probContent, targetUnit);
 
-  var renumberBtn = document.getElementById('btn-renumber-apply');
-  if (renumberBtn) {
-    renumberBtn.onclick = function() {
-      var prefix = document.getElementById('renumber-prefix').value.trim();
-      var fromVal = parseInt(document.getElementById('renumber-from').value);
-      var toVal   = parseInt(document.getElementById('renumber-to').value);
-      if (isNaN(fromVal)) { alert('開始番号を入力してください'); return; }
-      if (isNaN(toVal)) toVal = fromVal;
-      if (toVal < fromVal) { alert('終了番号は開始番号以上にしてください'); return; }
-
-      var newNums = [];
-      for (var n = fromVal; n <= toVal; n++) newNums.push(prefix + n);
-
-      var unitItems = (buildUnitMap(book.problems || []).unitMap[targetUnit] || []);
-      var newProbs = newNums.map(function(num, idx) {
-        if (idx < unitItems.length) {
-          var existing = book.problems[unitItems[idx].i];
-          return { unit: targetUnit, num: num, checks: existing.checks || ['','',''], memo: existing.memo || '', score: existing.score || 0, tags: existing.tags || [], page: existing.page || '' };
-        } else {
-          return { unit: targetUnit, num: num, checks: ['','',''] };
-        }
-      });
-
-      var othersBefore = []; var othersAfter = []; var passedUnit = false;
-      book.problems.forEach(function(p) {
-        var u = p.unit || '未分類';
-        if (u === targetUnit) { passedUnit = true; return; }
-        if (!passedUnit) othersBefore.push(p); else othersAfter.push(p);
-      });
-
-      book.problems = othersBefore.concat(newProbs).concat(othersAfter);
-      book.totalProb = book.problems.length;
-      book.solvedProb = book.problems.filter(function(p){ return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
-      save(); renderGrid(); showProbView(book, targetUnit);
+  var qaAddBtn = document.getElementById('qa-add');
+  if (qaAddBtn) {
+    qaAddBtn.onclick = function() {
+      addProblemToUnit(book, targetUnit);
     };
   }
+  var qaNumInp = document.getElementById('qa-num');
+  if (qaNumInp) {
+    qaNumInp.addEventListener('keydown', function(e) { if (e.key === 'Enter') addProblemToUnit(book, targetUnit); });
+  }
+
+  var delSelBtn = document.getElementById('btn-delete-selected');
+  if (delSelBtn) {
+    delSelBtn.onclick = function() {
+      deleteSelectedProblems(book, targetUnit, probContent);
+    };
+  }
+}
+
+function addProblemToUnit(book, targetUnit) {
+  var numInp = document.getElementById('qa-num');
+  var pageInp = document.getElementById('qa-page');
+  var num = numInp.value.trim();
+  if (!num) { alert('問題番号を入力してください'); numInp.focus(); return; }
+  var page = pageInp.value.trim();
+  var newProb = { unit: targetUnit, num: num, page: page, checks: ['', '', ''] };
+
+  // この単元の最後の問題のすぐ後ろに挿入し、既存の並び順のまとまりを維持する
+  var lastIdx = -1;
+  book.problems.forEach(function(p, idx) { if ((p.unit || '未分類') === targetUnit) lastIdx = idx; });
+  if (lastIdx === -1) book.problems.push(newProb);
+  else book.problems.splice(lastIdx + 1, 0, newProb);
+
+  book.totalProb = book.problems.length;
+  save(); renderGrid(); showProbView(book, targetUnit);
+  showToast('＋ 問題を追加しました');
+}
+
+function deleteSelectedProblems(book, targetUnit, container) {
+  var checked = Array.prototype.slice.call(container.querySelectorAll('.prob-select-cbx:checked'));
+  if (!checked.length) return;
+  var idxs = checked.map(function(cb) { return parseInt(cb.dataset.pi, 10); });
+  if (!confirm(idxs.length + '問を削除しますか？\nこの操作は元に戻せません。')) return;
+  idxs.sort(function(a, b) { return b - a; });
+  idxs.forEach(function(idx) { book.problems.splice(idx, 1); });
+  book.totalProb = book.problems.length;
+  book.solvedProb = book.problems.filter(function(p) { return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
+  save(); renderGrid(); showProbView(book, targetUnit);
+  showToast('🗑 選択した問題を削除しました');
+}
+
+// ドラッグ&ドロップで単元内の問題を並び替える（Pointer Events方式、PC・スマホどちらのタッチでも動作）
+function bindProbDragEvents(book, container, targetUnit) {
+  enablePointerReorder(container, {
+    itemSelector: '.prob-row',
+    handleSelector: '.drag-handle',
+    draggingClass: 'dragging',
+    dragOverClass: 'drag-over',
+    onDrop: function(srcRow, targetRow) {
+      var srcIdx = parseInt(srcRow.dataset.probRow, 10);
+      var targetIdx = parseInt(targetRow.dataset.probRow, 10);
+      if (isNaN(srcIdx) || isNaN(targetIdx) || srcIdx === targetIdx) return;
+      reorderProblemWithinUnit(book, targetUnit, srcIdx, targetIdx);
+    }
+  });
+}
+
+function reorderProblemWithinUnit(book, targetUnit, srcIdx, targetIdx) {
+  var arr = book.problems;
+  var movedObj = arr[srcIdx];
+  var targetObj = arr[targetIdx];
+  if (!movedObj || !targetObj) return;
+  arr.splice(srcIdx, 1);
+  var newTargetIdx = arr.indexOf(targetObj);
+  arr.splice(newTargetIdx, 0, movedObj);
+  save(); showProbView(book, targetUnit);
+  showToast('⠿ 並び替えました');
 }
 
 function bindProbListEvents(book2, container) {
@@ -4327,6 +4366,18 @@ function bindProbListEvents(book2, container) {
     btn.addEventListener('click', function() {
       book2.problems.splice(parseInt(btn.dataset.pi), 1);
       save(); openDetail(book2.id);
+    });
+  });
+
+  container.querySelectorAll('.prob-select-cbx').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      var row = cb.closest('.prob-row');
+      if (row) row.classList.toggle('selected', cb.checked);
+      var count = container.querySelectorAll('.prob-select-cbx:checked').length;
+      var countEl = document.getElementById('sel-count');
+      if (countEl) countEl.textContent = count;
+      var delBtn = document.getElementById('btn-delete-selected');
+      if (delBtn) delBtn.disabled = count === 0;
     });
   });
 
@@ -4525,25 +4576,21 @@ function renderDetail(book, keepEditMode) {
           '<button class="prob-edit-btn" id="btn-prob-edit-mode">✎ 編集</button>' +
         '</div>' +
         '<div class="prob-edit-ops-panel" id="prob-edit-ops-panel">' +
-          '<div class="prob-edit-ops-title">// 章編集ツール</div>' +
-          '<div class="renumber-block">' +
-            '<div class="renumber-block-label">▸ 問題番号を一括リナンバー</div>' +
-            '<div style="display:grid;grid-template-columns:1.2fr 0.8fr auto 0.8fr;gap:6px;align-items:end;margin-bottom:8px">' +
-              '<div><label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:4px;letter-spacing:1px">接頭辞</label>' +
-              '<input class="form-input" id="renumber-prefix" placeholder="例: 問題、第" style="font-size:14px;padding:10px 12px"></div>' +
-              '<div><label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:4px;letter-spacing:1px">開始番号</label>' +
-              '<input class="form-input" id="renumber-from" type="number" placeholder="例: 1" style="font-size:14px;padding:10px 12px"></div>' +
-              '<div style="font-family:var(--mono);font-size:14px;color:var(--text-dim);padding-bottom:12px;text-align:center">〜</div>' +
-              '<div><label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:4px;letter-spacing:1px">終了番号</label>' +
-              '<input class="form-input" id="renumber-to" type="number" placeholder="例: 20" style="font-size:14px;padding:10px 12px"></div>' +
+          '<div class="prob-edit-ops-title">// この単元の問題を編集</div>' +
+          '<div class="prob-edit-quick-add">' +
+            '<div class="prob-edit-block-label">▸ この単元に問題を追加</div>' +
+            '<div class="quick-add-row">' +
+              '<input class="form-input" id="qa-num" placeholder="問題番号 (例: 問5)">' +
+              '<input class="form-input" id="qa-page" type="number" placeholder="p.（任意）" style="width:80px;flex:none">' +
+              '<button class="btn-quick-add" id="qa-add">＋ 追加</button>' +
             '</div>' +
-            '<div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-bottom:8px">※ 既存の問題番号を上書き。問題数が増える場合は末尾に追加。接頭辞省略可。</div>' +
-            '<button class="btn-renumber" id="btn-renumber-apply">↺ 番号を適用</button>' +
           '</div>' +
-          '<div class="delete-unit-block">' +
-            '<div class="delete-unit-block-label">▸ この章をまるごと削除</div>' +
-            '<button class="btn-delete-unit" id="btn-delete-unit">🗑 この章の問題をすべて削除</button>' +
+          '<div class="prob-edit-select-del">' +
+            '<div class="prob-edit-block-label">▸ 選択した問題を削除</div>' +
+            '<div class="select-del-hint">下のリストでチェックを入れて選択できます</div>' +
+            '<button class="btn-delete-selected" id="btn-delete-selected" disabled>🗑 選択した問題を削除（<span id="sel-count">0</span>）</button>' +
           '</div>' +
+          '<div class="prob-edit-drag-hint">⠿ 「⠿」を掴んでドラッグすると並び替えできます</div>' +
         '</div>' +
         '<div id="prob-edit-inline-hint" style="display:none;font-family:var(--mono);font-size:10px;color:var(--orange);background:rgba(255,123,0,0.07);border:1px solid rgba(255,123,0,0.3);border-radius:8px;padding:8px 12px;margin-bottom:10px;letter-spacing:0.5px">✎ 問題番号・ページを直接入力できます。入力欄を離れると自動保存されます。</div>' +
         '<div id="prob-view-content"></div>' +
@@ -4665,14 +4712,42 @@ function renderDetail(book, keepEditMode) {
     if (!valid) return;
     if (entries.length === 0) { alert('開始番号を入力してください'); return; }
     if (!book2.problems) book2.problems = [];
-    book2.problems = book2.problems.filter(function(p) { return (p.unit || '未分類') !== unit; });
+
+    // 既存の問題は消さず、この単元にまだ無い問題番号だけを末尾に追加する
+    // （以前は同じ単元名で追加するとその単元の既存問題が全て消えて置き換わってしまっていたバグを修正）
+    var existingNums = {};
+    book2.problems.forEach(function(p) {
+      if ((p.unit || '未分類') === unit) existingNums[p.num] = true;
+    });
+    var toAdd = [];
     entries.forEach(function(e) {
       for (var n = e.from; n <= e.to; n++) {
-        book2.problems.push({ unit: unit, num: e.prefix + n, checks: ['','',''] });
+        var num = e.prefix + n;
+        if (existingNums[num]) continue;
+        existingNums[num] = true;
+        toAdd.push({ unit: unit, num: num, checks: ['','',''] });
       }
     });
+    var skippedCount = (function(){
+      var total = 0;
+      entries.forEach(function(e){ total += (e.to - e.from + 1); });
+      return total - toAdd.length;
+    })();
+
+    // この単元の最後の問題の直後にまとめて挿入し、単元の並び順を維持する
+    var lastIdx = -1;
+    book2.problems.forEach(function(p, idx) { if ((p.unit || '未分類') === unit) lastIdx = idx; });
+    if (lastIdx === -1) {
+      book2.problems = book2.problems.concat(toAdd);
+    } else {
+      book2.problems.splice.apply(book2.problems, [lastIdx + 1, 0].concat(toAdd));
+    }
     book2.totalProb = book2.problems.length;
-    save(); openDetail(book2.id);
+    save();
+    var msg = '＋ ' + toAdd.length + '問を追加しました';
+    if (skippedCount > 0) msg += '（既存と重複する番号 ' + skippedCount + '問はスキップ）';
+    showToast(msg);
+    openDetail(book2.id);
   };
 
   document.querySelectorAll('.log-del').forEach(function(btn) {
